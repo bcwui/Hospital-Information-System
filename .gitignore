@@ -1,0 +1,28 @@
+# Personal
+.claude/
+面试准备.md
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Environment
+.env
+.env.*
+*.local
+
+# Dependencies
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+target/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
