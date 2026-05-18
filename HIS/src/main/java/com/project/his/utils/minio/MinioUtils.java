@@ -1,4 +1,4 @@
-package com.graduation.his.utils.minio;
+package com.project.his.utils.minio;
 
 import io.minio.*;
 import io.minio.errors.*;

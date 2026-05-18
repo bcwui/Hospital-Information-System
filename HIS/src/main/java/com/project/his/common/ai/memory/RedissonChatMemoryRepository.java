@@ -1,4 +1,4 @@
-package com.graduation.his.common.ai.memory;
+package com.project.his.common.ai.memory;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

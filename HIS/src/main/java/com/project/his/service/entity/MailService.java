@@ -1,8 +1,8 @@
-package com.graduation.his.service.entity;
+package com.project.his.service.entity;
 
 import cn.hutool.core.util.RandomUtil;
-import com.graduation.his.common.Constants;
-import com.graduation.his.utils.redis.RedissonService;
+import com.project.his.common.Constants;
+import com.project.his.utils.redis.RedissonService;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * 邮件服务类
- * @author hua
  */
 @Service
 @Slf4j

@@ -1,14 +1,14 @@
-package com.graduation.his.service.business.impl;
+package com.project.his.service.business.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.graduation.his.domain.po.Diagnosis;
-import com.graduation.his.domain.po.Doctor;
-import com.graduation.his.domain.po.Patient;
-import com.graduation.his.domain.po.User;
-import com.graduation.his.domain.vo.DiagnosisVO;
-import com.graduation.his.exception.BusinessException;
-import com.graduation.his.service.business.IMedicalService;
-import com.graduation.his.service.entity.*;
+import com.project.his.domain.po.Diagnosis;
+import com.project.his.domain.po.Doctor;
+import com.project.his.domain.po.Patient;
+import com.project.his.domain.po.User;
+import com.project.his.domain.vo.DiagnosisVO;
+import com.project.his.exception.BusinessException;
+import com.project.his.service.business.IMedicalService;
+import com.project.his.service.entity.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -19,11 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.graduation.his.domain.dto.DiagnosisDTO;
-import com.graduation.his.domain.po.Appointment;
+import com.project.his.domain.dto.DiagnosisDTO;
+import com.project.his.domain.po.Appointment;
 
 /**
- * @author hua
  * @description 医疗服务实现类
  * @create 2025-04-02 22:51
  */

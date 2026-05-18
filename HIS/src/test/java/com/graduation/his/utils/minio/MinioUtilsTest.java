@@ -1,6 +1,6 @@
-package com.graduation.his.utils.minio;
+package com.project.his.utils.minio;
 
-import com.graduation.his.common.Constants;
+import com.project.his.common.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

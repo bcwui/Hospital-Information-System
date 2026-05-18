@@ -1,4 +1,4 @@
-package com.graduation.his.domain.query;
+package com.project.his.domain.query;
 
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;

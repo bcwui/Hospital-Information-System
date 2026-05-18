@@ -1,22 +1,22 @@
-package com.graduation.his.service.business.impl;
+package com.project.his.service.business.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.graduation.his.common.Constants;
-import com.graduation.his.exception.BusinessException;
-import com.graduation.his.domain.dto.DoctorDTO;
-import com.graduation.his.domain.po.Clinic;
-import com.graduation.his.domain.po.Department;
-import com.graduation.his.domain.po.Doctor;
-import com.graduation.his.domain.po.Schedule;
-import com.graduation.his.domain.po.User;
-import com.graduation.his.service.business.IAdminService;
-import com.graduation.his.service.entity.IClinicService;
-import com.graduation.his.service.entity.IDepartmentService;
-import com.graduation.his.service.entity.IDoctorService;
-import com.graduation.his.service.entity.IScheduleService;
-import com.graduation.his.service.entity.IUserService;
-import com.graduation.his.utils.minio.MinioUtils;
+import com.project.his.common.Constants;
+import com.project.his.exception.BusinessException;
+import com.project.his.domain.dto.DoctorDTO;
+import com.project.his.domain.po.Clinic;
+import com.project.his.domain.po.Department;
+import com.project.his.domain.po.Doctor;
+import com.project.his.domain.po.Schedule;
+import com.project.his.domain.po.User;
+import com.project.his.service.business.IAdminService;
+import com.project.his.service.entity.IClinicService;
+import com.project.his.service.entity.IDepartmentService;
+import com.project.his.service.entity.IDoctorService;
+import com.project.his.service.entity.IScheduleService;
+import com.project.his.service.entity.IUserService;
+import com.project.his.utils.minio.MinioUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -32,7 +32,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author hua
  * @description 管理服务实现类
  * @create 2025-04-04 16:10
  */

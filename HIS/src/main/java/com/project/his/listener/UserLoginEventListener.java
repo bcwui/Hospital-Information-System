@@ -1,4 +1,4 @@
-package com.graduation.his.listener;
+package com.project.his.listener;
 
 import cn.dev33.satoken.listener.SaTokenListener;
 import cn.dev33.satoken.stp.SaLoginModel;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * 用户登录事件监听器
- * @author hua
  */
 @Slf4j
 @Component

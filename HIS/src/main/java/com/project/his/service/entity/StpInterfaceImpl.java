@@ -1,10 +1,10 @@
-package com.graduation.his.service.entity;
+package com.project.his.service.entity;
 
 
 import cn.dev33.satoken.stp.StpInterface;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
-import com.graduation.his.domain.enums.PermissionStatus;
-import com.graduation.his.domain.po.User;
+import com.project.his.domain.enums.PermissionStatus;
+import com.project.his.domain.po.User;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

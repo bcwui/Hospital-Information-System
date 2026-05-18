@@ -1,13 +1,12 @@
-package com.graduation.his.service.business;
+package com.project.his.service.business;
 
-import com.graduation.his.domain.dto.UserLoginDTO;
-import com.graduation.his.domain.dto.UserRegisterDTO;
-import com.graduation.his.domain.dto.UserUpdateDTO;
-import com.graduation.his.domain.vo.UserVO;
+import com.project.his.domain.dto.UserLoginDTO;
+import com.project.his.domain.dto.UserRegisterDTO;
+import com.project.his.domain.dto.UserUpdateDTO;
+import com.project.his.domain.vo.UserVO;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * @author hua
  * @description 登录鉴权，用户信息接口
  * @create 2025-03-31 20:49
  */

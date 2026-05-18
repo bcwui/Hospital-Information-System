@@ -1,17 +1,16 @@
-package com.graduation.his.service.business;
+package com.project.his.service.business;
 
-import com.graduation.his.domain.dto.DoctorDTO;
-import com.graduation.his.domain.po.Clinic;
-import com.graduation.his.domain.po.Department;
-import com.graduation.his.domain.po.Doctor;
-import com.graduation.his.domain.po.Schedule;
+import com.project.his.domain.dto.DoctorDTO;
+import com.project.his.domain.po.Clinic;
+import com.project.his.domain.po.Department;
+import com.project.his.domain.po.Doctor;
+import com.project.his.domain.po.Schedule;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author hua
  * @description 管理服务接口
  * @create 2025-04-04 16:10
  */

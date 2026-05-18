@@ -1,4 +1,4 @@
-package com.graduation.his.config.ai.tools;
+package com.project.his.config.ai.tools;
 
 /**
  * 患者上下文，用于在AI Tool中获取当前会话的患者信息

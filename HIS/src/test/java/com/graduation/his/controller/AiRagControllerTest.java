@@ -1,12 +1,12 @@
-package com.graduation.his.controller;
+package com.project.his.controller;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.graduation.his.domain.dto.AiRagAddRequest;
-import com.graduation.his.domain.dto.AiRagDocument;
-import com.graduation.his.domain.dto.AiRagSearchRequest;
-import com.graduation.his.domain.vo.AiRagSearchResult;
-import com.graduation.his.service.entity.IAiRagService;
+import com.project.his.domain.dto.AiRagAddRequest;
+import com.project.his.domain.dto.AiRagDocument;
+import com.project.his.domain.dto.AiRagSearchRequest;
+import com.project.his.domain.vo.AiRagSearchResult;
+import com.project.his.service.entity.IAiRagService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ import org.springframework.test.context.ContextConfiguration;
         excludeAutoConfiguration = { DataSourceAutoConfiguration.class,MybatisPlusAutoConfiguration.class },
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.ASSIGNABLE_TYPE,
-                classes = com.graduation.his.config.SaTokenConfigure.class
+                classes = com.project.his.config.SaTokenConfigure.class
         )
 )
 @ContextConfiguration(classes = AiRagControllerTest.TestApplication.class)

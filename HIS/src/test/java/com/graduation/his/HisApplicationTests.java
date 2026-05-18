@@ -1,4 +1,4 @@
-package com.graduation.his;
+package com.project.his;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

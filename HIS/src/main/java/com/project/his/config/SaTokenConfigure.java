@@ -1,4 +1,4 @@
-package com.graduation.his.config;
+package com.project.his.config;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import org.springframework.context.annotation.Configuration;

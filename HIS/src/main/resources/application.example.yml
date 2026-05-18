@@ -89,7 +89,7 @@ sa-token:
   auto-renew: true
 
 mybatis-plus:
-  type-aliases-package: com.graduation.his.domain.po
+  type-aliases-package: com.project.his.domain.po
   mapper-locations: classpath:mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

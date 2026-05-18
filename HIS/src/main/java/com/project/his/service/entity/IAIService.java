@@ -1,9 +1,9 @@
-package com.graduation.his.service.entity;
+package com.project.his.service.entity;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.graduation.his.domain.dto.AiConsultRequest;
-import com.graduation.his.domain.dto.ConsultSession;
-import com.graduation.his.domain.po.AiConsultRecord;
+import com.project.his.domain.dto.AiConsultRequest;
+import com.project.his.domain.dto.ConsultSession;
+import com.project.his.domain.po.AiConsultRecord;
 import reactor.core.publisher.Flux;
 
 /**
@@ -11,8 +11,6 @@ import reactor.core.publisher.Flux;
  * AI 问诊记录表 服务类
  * </p>
  *
- * @author hua
- * @since 2025-03-30
  */
 public interface IAIService extends IService<AiConsultRecord> {
 

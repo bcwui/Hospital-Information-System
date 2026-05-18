@@ -1,19 +1,19 @@
-package com.graduation.his.service.business;
+package com.project.his.service.business;
 
-import com.graduation.his.domain.dto.AiConsultRequest;
-import com.graduation.his.domain.dto.ConsultSession;
-import com.graduation.his.domain.dto.MessageRecord;
-import com.graduation.his.domain.po.Appointment;
-import com.graduation.his.domain.po.Clinic;
-import com.graduation.his.domain.po.Department;
-import com.graduation.his.domain.po.Doctor;
-import com.graduation.his.domain.po.Patient;
-import com.graduation.his.domain.po.Schedule;
-import com.graduation.his.domain.query.ScheduleQuery;
-import com.graduation.his.domain.vo.AppointmentVO;
-import com.graduation.his.domain.vo.DoctorVO;
-import com.graduation.his.domain.vo.ScheduleDetailVO;
-import com.graduation.his.domain.vo.ScheduleListVO;
+import com.project.his.domain.dto.AiConsultRequest;
+import com.project.his.domain.dto.ConsultSession;
+import com.project.his.domain.dto.MessageRecord;
+import com.project.his.domain.po.Appointment;
+import com.project.his.domain.po.Clinic;
+import com.project.his.domain.po.Department;
+import com.project.his.domain.po.Doctor;
+import com.project.his.domain.po.Patient;
+import com.project.his.domain.po.Schedule;
+import com.project.his.domain.query.ScheduleQuery;
+import com.project.his.domain.vo.AppointmentVO;
+import com.project.his.domain.vo.DoctorVO;
+import com.project.his.domain.vo.ScheduleDetailVO;
+import com.project.his.domain.vo.ScheduleListVO;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author hua
  * @description 预约挂号与问诊服务接口
  * @create 2025-03-30 17:28
  */

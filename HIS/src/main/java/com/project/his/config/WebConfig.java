@@ -1,7 +1,7 @@
-package com.graduation.his.config;
+package com.project.his.config;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
-import com.graduation.his.interceptor.LoginCheckInterceptor;
+import com.project.his.interceptor.LoginCheckInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

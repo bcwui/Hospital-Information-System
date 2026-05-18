@@ -1,14 +1,14 @@
-package com.graduation.his.controller;
+package com.project.his.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
-import com.graduation.his.common.Result;
-import com.graduation.his.domain.dto.AutoScheduleRequest;
-import com.graduation.his.domain.dto.DoctorDTO;
-import com.graduation.his.domain.po.Clinic;
-import com.graduation.his.domain.po.Department;
-import com.graduation.his.domain.po.Doctor;
-import com.graduation.his.domain.po.Schedule;
-import com.graduation.his.service.business.IAdminService;
+import com.project.his.common.Result;
+import com.project.his.domain.dto.AutoScheduleRequest;
+import com.project.his.domain.dto.DoctorDTO;
+import com.project.his.domain.po.Clinic;
+import com.project.his.domain.po.Department;
+import com.project.his.domain.po.Doctor;
+import com.project.his.domain.po.Schedule;
+import com.project.his.service.business.IAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author hua
  * @description 管理模块控制器
  * @create 2025-04-04 16:10
  */

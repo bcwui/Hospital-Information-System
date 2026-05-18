@@ -1,22 +1,22 @@
-package com.graduation.his.controller;
+package com.project.his.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
 import cn.dev33.satoken.stp.StpUtil;
-import com.graduation.his.common.Result;
-import com.graduation.his.domain.dto.DiagnosisDTO;
-import com.graduation.his.domain.po.Clinic;
-import com.graduation.his.domain.po.Department;
-import com.graduation.his.domain.po.Doctor;
-import com.graduation.his.domain.po.User;
-import com.graduation.his.domain.vo.DiagnosisVO;
-import com.graduation.his.domain.vo.DoctorProfileVO;
-import com.graduation.his.exception.BusinessException;
-import com.graduation.his.service.business.IMedicalService;
-import com.graduation.his.service.entity.IClinicService;
-import com.graduation.his.service.entity.IDepartmentService;
-import com.graduation.his.service.entity.IDoctorService;
-import com.graduation.his.service.entity.IUserService;
+import com.project.his.common.Result;
+import com.project.his.domain.dto.DiagnosisDTO;
+import com.project.his.domain.po.Clinic;
+import com.project.his.domain.po.Department;
+import com.project.his.domain.po.Doctor;
+import com.project.his.domain.po.User;
+import com.project.his.domain.vo.DiagnosisVO;
+import com.project.his.domain.vo.DoctorProfileVO;
+import com.project.his.exception.BusinessException;
+import com.project.his.service.business.IMedicalService;
+import com.project.his.service.entity.IClinicService;
+import com.project.his.service.entity.IDepartmentService;
+import com.project.his.service.entity.IDoctorService;
+import com.project.his.service.entity.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @author hua
  * @description 医疗服务模块控制器
  * @create 2025-03-30 16:12
  */

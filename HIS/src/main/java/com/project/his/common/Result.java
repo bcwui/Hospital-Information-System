@@ -1,4 +1,4 @@
-package com.graduation.his.common;
+package com.project.his.common;
 
 import lombok.Data;
 

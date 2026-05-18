@@ -1,11 +1,11 @@
-package com.graduation.his.service.entity.impl;
+package com.project.his.service.entity.impl;
 
-import com.graduation.his.config.ai.AiProperties;
-import com.graduation.his.domain.dto.AiRagAddRequest;
-import com.graduation.his.domain.dto.AiRagDocument;
-import com.graduation.his.domain.dto.AiRagSearchRequest;
-import com.graduation.his.domain.vo.AiRagSearchResult;
-import com.graduation.his.service.entity.IAiRagService;
+import com.project.his.config.ai.AiProperties;
+import com.project.his.domain.dto.AiRagAddRequest;
+import com.project.his.domain.dto.AiRagDocument;
+import com.project.his.domain.dto.AiRagSearchRequest;
+import com.project.his.domain.vo.AiRagSearchResult;
+import com.project.his.service.entity.IAiRagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;

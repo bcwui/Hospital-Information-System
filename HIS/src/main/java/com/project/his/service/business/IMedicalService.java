@@ -1,13 +1,12 @@
-package com.graduation.his.service.business;
+package com.project.his.service.business;
 
-import com.graduation.his.domain.po.User;
-import com.graduation.his.domain.vo.DiagnosisVO;
-import com.graduation.his.domain.dto.DiagnosisDTO;
+import com.project.his.domain.po.User;
+import com.project.his.domain.vo.DiagnosisVO;
+import com.project.his.domain.dto.DiagnosisDTO;
 
 import java.util.List;
 
 /**
- * @author hua
  * @description 医疗服务接口
  * @create 2025-04-02 22:51
  */

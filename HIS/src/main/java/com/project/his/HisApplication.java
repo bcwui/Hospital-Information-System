@@ -1,11 +1,11 @@
-package com.graduation.his;
+package com.project.his;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.graduation.his.mapper")
+@MapperScan("com.project.his.mapper")
 public class HisApplication {
 
     public static void main(String[] args) {

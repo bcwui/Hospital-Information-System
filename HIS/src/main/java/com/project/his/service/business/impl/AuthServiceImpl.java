@@ -1,26 +1,26 @@
-package com.graduation.his.service.business.impl;
+package com.project.his.service.business.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.graduation.his.common.Constants;
-import com.graduation.his.exception.BusinessException;
-import com.graduation.his.domain.dto.UserLoginDTO;
-import com.graduation.his.domain.dto.UserRegisterDTO;
-import com.graduation.his.domain.dto.UserUpdateDTO;
-import com.graduation.his.domain.po.Patient;
-import com.graduation.his.domain.po.User;
-import com.graduation.his.domain.po.Doctor;
-import com.graduation.his.domain.po.Clinic;
-import com.graduation.his.domain.po.Department;
-import com.graduation.his.domain.vo.UserVO;
-import com.graduation.his.service.business.IAuthService;
-import com.graduation.his.service.entity.IPatientService;
-import com.graduation.his.service.entity.IUserService;
-import com.graduation.his.service.entity.MailService;
-import com.graduation.his.service.entity.IDoctorService;
-import com.graduation.his.service.entity.IClinicService;
-import com.graduation.his.service.entity.IDepartmentService;
-import com.graduation.his.utils.minio.MinioUtils;
-import com.graduation.his.utils.redis.RedissonService;
+import com.project.his.common.Constants;
+import com.project.his.exception.BusinessException;
+import com.project.his.domain.dto.UserLoginDTO;
+import com.project.his.domain.dto.UserRegisterDTO;
+import com.project.his.domain.dto.UserUpdateDTO;
+import com.project.his.domain.po.Patient;
+import com.project.his.domain.po.User;
+import com.project.his.domain.po.Doctor;
+import com.project.his.domain.po.Clinic;
+import com.project.his.domain.po.Department;
+import com.project.his.domain.vo.UserVO;
+import com.project.his.service.business.IAuthService;
+import com.project.his.service.entity.IPatientService;
+import com.project.his.service.entity.IUserService;
+import com.project.his.service.entity.MailService;
+import com.project.his.service.entity.IDoctorService;
+import com.project.his.service.entity.IClinicService;
+import com.project.his.service.entity.IDepartmentService;
+import com.project.his.utils.minio.MinioUtils;
+import com.project.his.utils.redis.RedissonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -32,7 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 
 /**
- * @author hua
  * @description 登录鉴权，用户信息服务类
  * @create 2025-03-31 20:49
  */

@@ -1,11 +1,10 @@
-package com.graduation.his.utils.redis;
+package com.project.his.utils.redis;
 
 import org.redisson.api.*;
 
 /**
  * Redis 服务
  *
- * @author hua
  */
 public interface IRedisService {
 
