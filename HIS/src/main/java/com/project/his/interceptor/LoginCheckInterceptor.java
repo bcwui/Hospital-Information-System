@@ -1,8 +1,8 @@
-package com.graduation.his.interceptor;
+package com.project.his.interceptor;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSONObject;
-import com.graduation.his.common.Result;
+import com.project.his.common.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

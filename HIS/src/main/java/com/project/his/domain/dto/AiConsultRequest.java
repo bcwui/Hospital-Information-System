@@ -1,4 +1,4 @@
-package com.graduation.his.domain.dto;
+package com.project.his.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

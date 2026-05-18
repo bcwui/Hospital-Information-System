@@ -1,9 +1,9 @@
-package com.graduation.his.service.entity.impl;
+package com.project.his.service.entity.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.graduation.his.domain.po.Clinic;
-import com.graduation.his.mapper.ClinicMapper;
-import com.graduation.his.service.entity.IClinicService;
+import com.project.his.domain.po.Clinic;
+import com.project.his.mapper.ClinicMapper;
+import com.project.his.service.entity.IClinicService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +14,6 @@ import java.util.List;
  * 门诊表 服务实现类
  * </p>
  *
- * @author hua
- * @since 2025-04-04
  */
 @Service
 public class ClinicServiceImpl extends ServiceImpl<ClinicMapper, Clinic> implements IClinicService {

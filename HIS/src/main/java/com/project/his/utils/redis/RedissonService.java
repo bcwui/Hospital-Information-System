@@ -1,4 +1,4 @@
-package com.graduation.his.utils.redis;
+package com.project.his.utils.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.*;
@@ -9,7 +9,6 @@ import java.time.Duration;
 /**
  * Redis 服务 - Redisson
  *
- * @author hua
  */
 @Service("redissonService")
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package com.graduation.his.domain.vo;
+package com.project.his.domain.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

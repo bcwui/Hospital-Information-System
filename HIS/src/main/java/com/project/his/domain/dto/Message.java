@@ -1,4 +1,4 @@
-package com.graduation.his.domain.dto;
+package com.project.his.domain.dto;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.AllArgsConstructor;

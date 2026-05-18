@@ -1,4 +1,4 @@
-package com.graduation.his.config;
+package com.project.his.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +10,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 线程池配置
- * @author hua
  */
 @Configuration
 @EnableAsync

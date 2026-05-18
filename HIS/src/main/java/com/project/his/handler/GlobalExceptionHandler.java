@@ -1,8 +1,8 @@
-package com.graduation.his.handler;
+package com.project.his.handler;
 
 import cn.dev33.satoken.exception.NotLoginException;
-import com.graduation.his.common.Result;
-import com.graduation.his.exception.BusinessException;
+import com.project.his.common.Result;
+import com.project.his.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

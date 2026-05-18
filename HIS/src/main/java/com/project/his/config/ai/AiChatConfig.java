@@ -1,8 +1,8 @@
-package com.graduation.his.config.ai;
+package com.project.his.config.ai;
 
-import com.graduation.his.common.ai.memory.RedissonChatMemoryRepository;
-import com.graduation.his.config.ai.tools.AppointmentTools;
-import com.graduation.his.config.ai.tools.HospitalTools;
+import com.project.his.common.ai.memory.RedissonChatMemoryRepository;
+import com.project.his.config.ai.tools.AppointmentTools;
+import com.project.his.config.ai.tools.HospitalTools;
 import org.redisson.api.RedissonClient;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;

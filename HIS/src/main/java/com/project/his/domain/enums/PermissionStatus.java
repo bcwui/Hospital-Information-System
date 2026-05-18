@@ -1,4 +1,4 @@
-package com.graduation.his.domain.enums;
+package com.project.his.domain.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.Getter;

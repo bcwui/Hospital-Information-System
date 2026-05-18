@@ -1,13 +1,13 @@
-package com.graduation.his.config.ai.tools;
+package com.project.his.config.ai.tools;
 
-import com.graduation.his.domain.po.Clinic;
-import com.graduation.his.domain.po.Department;
-import com.graduation.his.domain.po.Doctor;
-import com.graduation.his.domain.po.Schedule;
-import com.graduation.his.service.entity.IClinicService;
-import com.graduation.his.service.entity.IDepartmentService;
-import com.graduation.his.service.entity.IDoctorService;
-import com.graduation.his.service.entity.IScheduleService;
+import com.project.his.domain.po.Clinic;
+import com.project.his.domain.po.Department;
+import com.project.his.domain.po.Doctor;
+import com.project.his.domain.po.Schedule;
+import com.project.his.service.entity.IClinicService;
+import com.project.his.service.entity.IDepartmentService;
+import com.project.his.service.entity.IDoctorService;
+import com.project.his.service.entity.IScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;

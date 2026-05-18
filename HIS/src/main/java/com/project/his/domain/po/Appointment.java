@@ -1,4 +1,4 @@
-package com.graduation.his.domain.po;
+package com.project.his.domain.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -15,8 +15,6 @@ import lombok.experimental.Accessors;
  * 预约挂号表
  * </p>
  *
- * @author feng
- * @since 2025-04-07
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

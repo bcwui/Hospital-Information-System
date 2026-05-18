@@ -1,6 +1,6 @@
-package com.graduation.his.service.entity;
+package com.project.his.service.entity;
 
-import com.graduation.his.domain.po.Clinic;
+import com.project.his.domain.po.Clinic;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -10,8 +10,6 @@ import java.util.List;
  * 门诊表 服务类
  * </p>
  *
- * @author hua
- * @since 2025-04-04
  */
 public interface IClinicService extends IService<Clinic> {
 

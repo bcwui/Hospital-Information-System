@@ -1,9 +1,9 @@
-package com.graduation.his.service.entity.impl;
+package com.project.his.service.entity.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.graduation.his.domain.po.Department;
-import com.graduation.his.mapper.DepartmentMapper;
-import com.graduation.his.service.entity.IDepartmentService;
+import com.project.his.domain.po.Department;
+import com.project.his.mapper.DepartmentMapper;
+import com.project.his.service.entity.IDepartmentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +14,6 @@ import java.util.List;
  * 医院科室表 服务实现类
  * </p>
  *
- * @author hua
- * @since 2025-04-02
  */
 @Service
 public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Department> implements IDepartmentService {

@@ -1,4 +1,4 @@
-package com.graduation.his.domain.po;
+package com.project.his.domain.po;
 
 import com.baomidou.mybatisplus.annotation.*;
 import java.time.LocalDateTime;
@@ -12,8 +12,6 @@ import lombok.experimental.Accessors;
  * 用户基本信息表
  * </p>
  *
- * @author hua
- * @since 2025-03-30
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

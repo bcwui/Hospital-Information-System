@@ -1,4 +1,4 @@
-package com.graduation.his.config;
+package com.project.his.config;
 
 import io.minio.MinioClient;
 import org.springframework.context.annotation.Bean;

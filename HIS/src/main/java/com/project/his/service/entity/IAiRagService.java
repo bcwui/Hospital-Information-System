@@ -1,8 +1,8 @@
-package com.graduation.his.service.entity;
+package com.project.his.service.entity;
 
-import com.graduation.his.domain.dto.AiRagAddRequest;
-import com.graduation.his.domain.dto.AiRagSearchRequest;
-import com.graduation.his.domain.vo.AiRagSearchResult;
+import com.project.his.domain.dto.AiRagAddRequest;
+import com.project.his.domain.dto.AiRagSearchRequest;
+import com.project.his.domain.vo.AiRagSearchResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

@@ -1,14 +1,14 @@
-package com.graduation.his.service.entity.impl;
+package com.project.his.service.entity.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.graduation.his.common.Constants;
-import com.graduation.his.config.ai.tools.PatientContext;
-import com.graduation.his.domain.dto.*;
-import com.graduation.his.domain.po.AiConsultRecord;
-import com.graduation.his.mapper.AiConsultRecordMapper;
-import com.graduation.his.service.entity.IAIService;
-import com.graduation.his.utils.redis.IRedisService;
+import com.project.his.common.Constants;
+import com.project.his.config.ai.tools.PatientContext;
+import com.project.his.domain.dto.*;
+import com.project.his.domain.po.AiConsultRecord;
+import com.project.his.mapper.AiConsultRecordMapper;
+import com.project.his.service.entity.IAIService;
+import com.project.his.utils.redis.IRedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RMap;
@@ -45,8 +45,6 @@ import java.util.concurrent.TimeUnit;
  * AI 问诊记录表 服务实现类
  * </p>
  *
- * @author hua
- * @since 2025-03-30
  */
 @Slf4j
 @Service

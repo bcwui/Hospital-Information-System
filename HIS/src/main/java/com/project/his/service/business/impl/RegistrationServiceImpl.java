@@ -1,34 +1,34 @@
-package com.graduation.his.service.business.impl;
+package com.project.his.service.business.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.graduation.his.exception.BusinessException;
-import com.graduation.his.domain.dto.AiConsultRequest;
-import com.graduation.his.domain.dto.ConsultSession;
-import com.graduation.his.domain.dto.MessageRecord;
-import com.graduation.his.domain.po.AiConsultRecord;
-import com.graduation.his.domain.po.Appointment;
-import com.graduation.his.domain.po.Clinic;
-import com.graduation.his.domain.po.Department;
-import com.graduation.his.domain.po.Doctor;
-import com.graduation.his.domain.po.Patient;
-import com.graduation.his.domain.po.Schedule;
-import com.graduation.his.domain.po.User;
-import com.graduation.his.domain.query.ScheduleQuery;
-import com.graduation.his.domain.vo.AppointmentVO;
-import com.graduation.his.domain.vo.DoctorVO;
-import com.graduation.his.domain.vo.ScheduleDetailVO;
-import com.graduation.his.domain.vo.ScheduleListVO;
-import com.graduation.his.service.business.IRegistrationService;
-import com.graduation.his.service.entity.IAIService;
-import com.graduation.his.service.entity.IAppointmentService;
-import com.graduation.his.service.entity.IClinicService;
-import com.graduation.his.service.entity.IDepartmentService;
-import com.graduation.his.service.entity.IDoctorService;
-import com.graduation.his.service.entity.IPatientService;
-import com.graduation.his.service.entity.IScheduleService;
-import com.graduation.his.service.entity.IUserService;
+import com.project.his.exception.BusinessException;
+import com.project.his.domain.dto.AiConsultRequest;
+import com.project.his.domain.dto.ConsultSession;
+import com.project.his.domain.dto.MessageRecord;
+import com.project.his.domain.po.AiConsultRecord;
+import com.project.his.domain.po.Appointment;
+import com.project.his.domain.po.Clinic;
+import com.project.his.domain.po.Department;
+import com.project.his.domain.po.Doctor;
+import com.project.his.domain.po.Patient;
+import com.project.his.domain.po.Schedule;
+import com.project.his.domain.po.User;
+import com.project.his.domain.query.ScheduleQuery;
+import com.project.his.domain.vo.AppointmentVO;
+import com.project.his.domain.vo.DoctorVO;
+import com.project.his.domain.vo.ScheduleDetailVO;
+import com.project.his.domain.vo.ScheduleListVO;
+import com.project.his.service.business.IRegistrationService;
+import com.project.his.service.entity.IAIService;
+import com.project.his.service.entity.IAppointmentService;
+import com.project.his.service.entity.IClinicService;
+import com.project.his.service.entity.IDepartmentService;
+import com.project.his.service.entity.IDoctorService;
+import com.project.his.service.entity.IPatientService;
+import com.project.his.service.entity.IScheduleService;
+import com.project.his.service.entity.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -42,7 +42,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author hua
  * @description 预约挂号与问诊服务实现类
  * @create 2025-03-30 17:29
  */

@@ -1,6 +1,6 @@
-package com.graduation.his.service.entity;
+package com.project.his.service.entity;
 
-import com.graduation.his.domain.po.Schedule;
+import com.project.his.domain.po.Schedule;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.time.LocalDate;
@@ -11,8 +11,6 @@ import java.util.List;
  * 医生排班表 服务类
  * </p>
  *
- * @author hua
- * @since 2025-03-30
  */
 public interface IScheduleService extends IService<Schedule> {
 

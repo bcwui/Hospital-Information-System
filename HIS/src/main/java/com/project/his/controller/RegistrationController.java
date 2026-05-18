@@ -1,18 +1,18 @@
-package com.graduation.his.controller;
+package com.project.his.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
-import com.graduation.his.common.Result;
-import com.graduation.his.domain.dto.AiConsultRequest;
-import com.graduation.his.domain.dto.ConsultSession;
-import com.graduation.his.domain.po.*;
-import com.graduation.his.domain.query.ScheduleQuery;
-import com.graduation.his.domain.vo.AppointmentVO;
-import com.graduation.his.domain.vo.DoctorVO;
-import com.graduation.his.domain.vo.ScheduleDetailVO;
-import com.graduation.his.domain.vo.ScheduleListVO;
-import com.graduation.his.exception.BusinessException;
-import com.graduation.his.service.business.IRegistrationService;
+import com.project.his.common.Result;
+import com.project.his.domain.dto.AiConsultRequest;
+import com.project.his.domain.dto.ConsultSession;
+import com.project.his.domain.po.*;
+import com.project.his.domain.query.ScheduleQuery;
+import com.project.his.domain.vo.AppointmentVO;
+import com.project.his.domain.vo.DoctorVO;
+import com.project.his.domain.vo.ScheduleDetailVO;
+import com.project.his.domain.vo.ScheduleListVO;
+import com.project.his.exception.BusinessException;
+import com.project.his.service.business.IRegistrationService;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +31,6 @@ import java.util.List;
  * 预约挂号表 前端控制器
  * </p>
  *
- * @author hua
- * @since 2025-03-30
  */
 @Slf4j
 @RestController

@@ -1,11 +1,11 @@
-package com.graduation.his.controller;
+package com.project.his.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
-import com.graduation.his.common.Result;
-import com.graduation.his.domain.dto.AiRagAddRequest;
-import com.graduation.his.domain.dto.AiRagSearchRequest;
-import com.graduation.his.domain.vo.AiRagSearchResult;
-import com.graduation.his.service.entity.IAiRagService;
+import com.project.his.common.Result;
+import com.project.his.domain.dto.AiRagAddRequest;
+import com.project.his.domain.dto.AiRagSearchRequest;
+import com.project.his.domain.vo.AiRagSearchResult;
+import com.project.his.service.entity.IAiRagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;

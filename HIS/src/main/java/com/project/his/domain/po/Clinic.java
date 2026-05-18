@@ -1,4 +1,4 @@
-package com.graduation.his.domain.po;
+package com.project.his.domain.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -14,8 +14,6 @@ import lombok.experimental.Accessors;
  * 门诊表
  * </p>
  *
- * @author hua
- * @since 2025-04-04
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
