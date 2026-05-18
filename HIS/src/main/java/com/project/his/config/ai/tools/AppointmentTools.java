@@ -7,10 +7,10 @@ import com.project.his.domain.vo.AppointmentVO;
 import com.project.his.service.business.IRegistrationService;
 import com.project.his.service.entity.IDoctorService;
 import com.project.his.service.entity.IScheduleService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,12 +21,19 @@ import java.util.List;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class AppointmentTools {
 
     private final IRegistrationService registrationService;
     private final IScheduleService scheduleService;
     private final IDoctorService doctorService;
+
+    public AppointmentTools(@Lazy IRegistrationService registrationService,
+                            IScheduleService scheduleService,
+                            IDoctorService doctorService) {
+        this.registrationService = registrationService;
+        this.scheduleService = scheduleService;
+        this.doctorService = doctorService;
+    }
 
     /**
      * 查询当前患者的预约记录
