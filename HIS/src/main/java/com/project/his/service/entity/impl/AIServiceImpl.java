@@ -206,42 +206,46 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
         final String finalSessionId = sessionId;
         final LocalDateTime userTime = LocalDateTime.now();
 
-        // 设置患者上下文，供Tool使用
-        PatientContext.setPatientId(patientId);
-
+        // 双重保障注入 Reactor Context：
+        // 1. sessionId → Tool 通过 Redis 反查 patientId
+        // 2. patientId → Redis 不可用时直接兜底
         return chatClient.prompt()
-                .system(createSystemPrompt())
+                .system(createSystemPrompt(patientId))
                 .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, finalSessionId))
                 .user(question)
                 .stream()
                 .content()
+                .contextWrite(ctx -> ctx
+                        .put(PatientContext.SESSION_ID_KEY, finalSessionId)
+                        .put(PatientContext.PATIENT_ID_KEY, patientId))
                 .doOnError(error -> {
                     log.error("处理AI问诊请求异常: {}", error.getMessage());
                     updateMemoryCreateTimes(finalSessionId, userTime, null);
-                    PatientContext.clear();
                 })
                 .doOnComplete(() -> {
                     updateMemoryCreateTimes(finalSessionId, userTime, LocalDateTime.now());
-                    // 自动保存对话到数据库
                     saveConsultRecord(finalSessionId);
-                    PatientContext.clear();
                 })
-                .doOnCancel(PatientContext::clear);
+                .doOnCancel(() -> log.info("AI问诊流被取消, sessionId: {}", finalSessionId));
     }
     
     /**
-     * 构建系统提示词
+     * 构建系统提示词（包含当前患者ID，确保AI在Tool调用时能传递正确的患者ID）
      */
-    private String createSystemPrompt() {
-        // 获取当前日期，用于告知AI正确的时间
+    private String createSystemPrompt(Long patientId) {
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy年M月d日"));
         String currentDateIso = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 
-        return """
+        String basePrompt = """
                 # AI 医疗助手
 
                 ## 当前时间
                 今天是 %s（%s）。查询排班或预约时，请基于这个日期。
+
+                ## 当前患者
+                当前对话的患者的唯一标识ID为：%d。
+                调用预约操作类工具（getMyAppointments / createAppointment / cancelAppointment）时，
+                系统会自动识别患者身份，你无需手动传递患者ID。
 
                 ## 身份
                 您是一位专业、友善的AI医疗助手，服务于本院患者。您可以进行健康咨询、症状分析，并帮助患者查询医院信息、预约挂号。
@@ -258,10 +262,10 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 - getDoctorSchedules: 查医生排班
                 - getAvailableSchedules: 查可预约排班
 
-                **预约操作类**
-                - getMyAppointments: 查患者预约
-                - createAppointment: 创建预约
-                - cancelAppointment: 取消预约
+                **预约操作类（自动识别患者身份）**
+                - getMyAppointments: 查患者预约，可按状态筛选
+                - createAppointment: 创建预约，只需排班ID
+                - cancelAppointment: 取消预约，只需预约ID
 
                 ## 对话原则
                 1. **自然对话**: 像真人医生一样交流，避免机械回复
@@ -280,7 +284,33 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 - 不提供具体药物剂量
                 - 严重症状建议立即就医
                 - 诊断结果仅供参考，以线下医生诊断为准
-                """.formatted(currentDate, currentDateIso, currentDateIso);
+                """.formatted(currentDate, currentDateIso, patientId, currentDateIso);
+
+        return basePrompt;
+    }
+
+    /**
+     * 构建系统提示词（通用版，不含患者ID，用于历史记录存储场景）
+     * 实际对话中会使用 {@link #createSystemPrompt(Long)} 包含正确的患者ID
+     */
+    private String createSystemPrompt() {
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy年M月d日"));
+        String currentDateIso = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+
+        return """
+                # AI 医疗助手（历史记录）
+
+                ## 当前时间
+                会话发生于 %s（%s）。
+
+                ## 身份
+                您是一位专业、友善的AI医疗助手，服务于本院患者。您可以进行健康咨询、症状分析，并帮助患者查询医院信息、预约挂号。
+
+                ## 安全提醒
+                - 不提供具体药物剂量
+                - 严重症状建议立即就医
+                - 诊断结果仅供参考，以线下医生诊断为准
+                """.formatted(currentDate, currentDateIso);
     }
 
     /**

@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RegistrationServiceImpl implements IRegistrationService {
 
+    @org.springframework.context.annotation.Lazy
     private final IAIService aiService;
 
     private final IDoctorService doctorService;
@@ -643,6 +644,7 @@ public class RegistrationServiceImpl implements IRegistrationService {
     }
     
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public AppointmentVO createAppointmentVO(Long patientId, Long scheduleId, Integer isRevisit) {
         if (patientId == null) {
             throw new BusinessException("患者ID不能为空");
@@ -650,8 +652,8 @@ public class RegistrationServiceImpl implements IRegistrationService {
         if (scheduleId == null) {
             throw new BusinessException("排班ID不能为空");
         }
-        
-        // 先创建预约记录
+
+        // 直接内联 createAppointment 逻辑，避免 self-invocation 导致 @Transactional 失效
         Appointment appointment = createAppointment(patientId, scheduleId, isRevisit);
         
         // 获取患者信息
