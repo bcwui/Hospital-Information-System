@@ -381,58 +381,64 @@ const sendMessage = async () => {
 
 <style lang="scss" scoped>
 .auth-panel {
-  padding: 1.5rem 2rem;
-  border-radius: 24px;
-  background: var(--card-bg, #fff);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  padding: 1.75rem 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.1rem;
 }
 
 .panel-head {
+  text-align: center;
+
   h3 {
     margin: 0;
-    font-size: 1.75rem;
-    color: var(--text-strong, #1f2933);
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   p {
     margin: 0.35rem 0 0;
-    color: var(--text-muted, #5f6b7c);
+    color: #64748b;
   }
 }
 
 .step-indicator {
   display: inline-flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
   margin-top: 0.75rem;
-  padding: 0.25rem 0.4rem;
+  padding: 0.2rem 0.3rem;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.05);
+  background: #f1f5f9;
 
   span {
     padding: 0.35rem 1rem;
     border-radius: 999px;
-    font-size: 0.85rem;
-    color: var(--text-muted, #5f6b7c);
+    font-size: 0.82rem;
+    color: #64748b;
+    font-weight: 500;
+    transition: all 0.3s ease;
 
     &.active {
-      background: var(--primary-soft, rgba(59, 130, 246, 0.15));
-      color: var(--primary, #2563eb);
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
     }
   }
 }
 
 .auth-form {
   :deep(.el-form-item) {
-    margin-bottom: 1rem;
+    margin-bottom: 0.9rem;
   }
 
   .grid-wrapper {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem 1.25rem;
+    gap: 0.75rem 1.25rem;
   }
 
   .full-width {
@@ -440,7 +446,17 @@ const sendMessage = async () => {
   }
 
   :deep(.el-input__wrapper) {
-    border-radius: 6px;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: all 0.25s ease;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.12);
+    }
   }
 
   :deep(.el-input-number) {
@@ -461,6 +477,17 @@ const sendMessage = async () => {
 
 .cta {
   width: 100%;
+  height: 42px;
+  border-radius: 10px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  border: none;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(14, 165, 233, 0.3);
+  }
 }
 
 .secondary {
@@ -472,7 +499,8 @@ const sendMessage = async () => {
   display: flex;
   justify-content: center;
   gap: 0.4rem;
-  color: var(--text-muted, #5f6b7c);
+  color: #64748b;
+  font-size: 0.9rem;
 }
 
 .fade-enter-active,

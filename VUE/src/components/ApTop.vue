@@ -200,17 +200,77 @@ const handleAutoScheduleAll = async (startDate: string, endDate: string) => {
 
 <style lang="scss" scoped>
 .ap-top {
-  height: 2rem;
-  width: 85%;
-  margin: 1rem;
+  min-height: 3rem;
+  width: calc(100% - 2rem);
+  margin: 0.75rem 1rem;
+  padding: 0.75rem 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: linear-gradient(135deg, #f8faff, #f0f9ff);
+  border-radius: 14px;
+  border: 1px solid rgba(14, 165, 233, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 
   #patient {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    gap: 5vw;
+    gap: 2rem;
+
+    span {
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+    }
+
+    #searchInput {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      :deep(.el-input__wrapper) {
+        border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        transition: all 0.25s ease;
+
+        &:hover {
+          box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+        }
+
+        &.is-focus {
+          box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+        }
+      }
+    }
+  }
+
+  #admin {
+    display: flex;
+    gap: 8px;
+
+    :deep(.el-button) {
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  :deep(.el-button) {
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
   }
 }
 </style>

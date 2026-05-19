@@ -206,6 +206,39 @@ onMounted(() => {
   gap: var(--space-4);
   height: auto;
   min-height: 420px;
+  border: 1px solid transparent;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0ea5e9, #6366f1, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(14, 165, 233, 0.12);
+    border-color: rgba(14, 165, 233, 0.12);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .schedule-card__title h3 {
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
 }
 
 .schedule-card__header {
@@ -219,6 +252,8 @@ onMounted(() => {
   margin: 4px 0;
   font-size: 24px;
   color: var(--color-text);
+  font-weight: 700;
+  transition: all 0.3s ease;
 }
 
 .schedule-card__title .subtitle {
@@ -227,10 +262,11 @@ onMounted(() => {
 }
 
 .eyebrow {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  font-weight: 600;
 }
 
 .schedule-card__quota {
@@ -245,10 +281,12 @@ onMounted(() => {
   font-size: 28px;
   color: var(--color-text);
   line-height: 1;
+  font-weight: 700;
 }
 
 .schedule-card__quota small {
   color: var(--color-text-muted);
+  font-size: 0.85rem;
 }
 
 .schedule-card__body {
@@ -260,7 +298,13 @@ onMounted(() => {
 }
 
 .schedule-card__avatar {
-  border: 4px solid var(--color-primary-soft);
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
+  transition: all 0.3s ease;
+
+  .schedule-card:hover & {
+    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.25);
+  }
 }
 
 .schedule-card__info-grid {
@@ -276,10 +320,11 @@ onMounted(() => {
 }
 
 .label {
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
+  font-weight: 600;
 }
 
 .value {
@@ -291,7 +336,6 @@ onMounted(() => {
 .value.muted {
   font-weight: 400;
   color: var(--color-text-muted);
-
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -304,6 +348,16 @@ onMounted(() => {
   justify-content: flex-end;
   gap: var(--space-3);
   margin-top: auto;
+
+  :deep(.el-button) {
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+  }
 }
 
 @media (max-width: 640px) {
