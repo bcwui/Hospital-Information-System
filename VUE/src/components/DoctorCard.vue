@@ -214,10 +214,38 @@ const deleteDoctor = async (doctorId: string) => {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-}
+  border: 1px solid transparent;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 
-.doctor-card:hover {
-  box-shadow: var(--shadow-hover);
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #10b981, #0ea5e9, #6366f1);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(14, 165, 233, 0.12);
+    border-color: rgba(14, 165, 233, 0.15);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .doctor-name {
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
 }
 
 .doctor-card__header {
@@ -230,19 +258,28 @@ const deleteDoctor = async (doctorId: string) => {
 }
 
 .eyebrow {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  font-weight: 600;
 }
 
 .doctor-avatar {
   width: 100px;
   height: 100px;
   margin: 0;
-  border-radius: 100%;
+  border-radius: 50%;
   overflow: hidden;
   flex: 0 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 3px solid #fff;
+  transition: all 0.3s ease;
+
+  .doctor-card:hover & {
+    border-color: rgba(14, 165, 233, 0.2);
+    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.15);
+  }
 
   img {
     width: 100%;
@@ -253,13 +290,15 @@ const deleteDoctor = async (doctorId: string) => {
 
 .doctor-name {
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
   margin: 4px 0;
   color: var(--color-text);
+  transition: all 0.3s ease;
 }
 
 .subtitle {
   color: var(--color-text-muted);
+  font-size: 0.85rem;
 }
 
 .doctor-card__body {
@@ -277,22 +316,35 @@ const deleteDoctor = async (doctorId: string) => {
 }
 
 .desc-label {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
   margin-bottom: var(--space-2);
+  font-weight: 600;
 }
 
 .doctor-description {
   font-size: 12px;
   color: var(--color-text);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .doctor-card__actions {
   display: flex;
   justify-content: center;
   gap: var(--space-2);
+  flex-wrap: wrap;
+
+  :deep(.el-button) {
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
 }
 </style>

@@ -165,6 +165,40 @@ const deleteItem = async () => {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  border: 1px solid transparent;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0ea5e9, #6366f1, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    border-radius: 0;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(14, 165, 233, 0.12);
+    border-color: rgba(14, 165, 233, 0.15);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .department-title {
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
 }
 
 .department-header {
@@ -179,19 +213,21 @@ const deleteItem = async () => {
 }
 
 .eyebrow {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  font-weight: 600;
 }
 
 .department-title {
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
   margin-top: 4px;
   color: var(--color-text);
   line-height: 1.2;
   word-break: break-word;
+  transition: all 0.3s ease;
 }
 
 .department-content {
@@ -204,11 +240,25 @@ const deleteItem = async () => {
 .helper-text {
   color: var(--color-text-muted);
   text-align: center;
+  font-size: 0.9rem;
+  padding: 0 8px;
 }
 
 #btns {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 8px;
+
+  :deep(.el-button) {
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
 }
 </style>

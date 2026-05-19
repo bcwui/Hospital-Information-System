@@ -264,18 +264,29 @@ const handleSearch = async () => {
 
 <style lang="scss" scoped>
 .rag-manager {
-  padding: 1rem;
+  padding: 1.25rem;
   height: 100%;
   overflow: auto;
 }
 
 .tab-content {
-  padding: 1rem;
+  padding: 1.25rem 0.5rem;
 }
 
 .pdf-upload {
   width: 100%;
   max-width: 500px;
+
+  :deep(.el-upload-dragger) {
+    border-radius: 16px;
+    border: 2px dashed #cbd5e1;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #0ea5e9;
+      background: rgba(14, 165, 233, 0.03);
+    }
+  }
 }
 
 .selected-file {
@@ -284,6 +295,12 @@ const handleSearch = async () => {
 
 .upload-btn {
   margin-top: 1rem;
+  border-radius: 10px;
+  font-weight: 500;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
 }
 
 .upload-result {
@@ -297,16 +314,27 @@ const handleSearch = async () => {
   h4 {
     margin-bottom: 1rem;
     color: #303133;
+    font-weight: 600;
   }
 }
 
 .result-card {
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  border: 1px solid #f1f5f9;
+
+  &:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    border-color: #e2e8f0;
+  }
 
   .result-text {
     white-space: pre-wrap;
     word-break: break-all;
-    line-height: 1.6;
+    line-height: 1.7;
+    font-size: 0.9rem;
+    color: #475569;
   }
 
   .result-metadata {
