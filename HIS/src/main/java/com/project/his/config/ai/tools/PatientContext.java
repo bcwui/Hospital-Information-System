@@ -1,31 +1,16 @@
 package com.project.his.config.ai.tools;
 
 /**
- * 患者上下文，用于在AI Tool中获取当前会话的患者信息
- * 使用ThreadLocal保证线程安全
+ * 患者上下文 — 基于 Reactor Context，彻底消除 ThreadLocal。
+ * 双重保障：优先通过 sessionId 从 Redis 反查；若不可用则直接从 Context 读取。
  */
 public class PatientContext {
 
-    private static final ThreadLocal<Long> PATIENT_ID = new ThreadLocal<>();
+    /** Reactor Context 中存放 AI 会话 ID 的 key */
+    public static final String SESSION_ID_KEY = "AI_CONSULT_SESSION_ID";
 
-    /**
-     * 设置当前会话的患者ID
-     */
-    public static void setPatientId(Long patientId) {
-        PATIENT_ID.set(patientId);
-    }
+    /** Reactor Context 中直接存放 patientId 的 key（兜底） */
+    public static final String PATIENT_ID_KEY = "AI_CONSULT_PATIENT_ID";
 
-    /**
-     * 获取当前会话的患者ID
-     */
-    public static Long getPatientId() {
-        return PATIENT_ID.get();
-    }
-
-    /**
-     * 清除上下文（在请求结束时调用）
-     */
-    public static void clear() {
-        PATIENT_ID.remove();
-    }
+    private PatientContext() {}
 }

@@ -67,7 +67,7 @@ public class AiChatConfig {
                                  MessageChatMemoryAdvisor messageChatMemoryAdvisor,
                                  org.springframework.beans.factory.ObjectProvider<QuestionAnswerAdvisor> qaAdvisorProvider,
                                  HospitalTools hospitalTools,
-                                 AppointmentTools appointmentTools) {
+                                 @org.springframework.context.annotation.Lazy AppointmentTools appointmentTools) {
         QuestionAnswerAdvisor qaAdvisor = qaAdvisorProvider.getIfAvailable();
         ChatClient.Builder clientBuilder = builder
                 .defaultTools(hospitalTools, appointmentTools)
