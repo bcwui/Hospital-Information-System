@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.project.his.common.Constants;
 import com.project.his.config.ai.tools.PatientContext;
+import com.project.his.config.ai.tools.PatientContextHolder;
 import com.project.his.domain.dto.*;
 import com.project.his.domain.po.AiConsultRecord;
 import com.project.his.mapper.AiConsultRecordMapper;
@@ -206,6 +207,9 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
         final String finalSessionId = sessionId;
         final LocalDateTime userTime = LocalDateTime.now();
 
+        // 设置 ThreadLocal 上下文，确保同步 Tool 方法能获取患者ID
+        PatientContextHolder.set(patientId, finalSessionId);
+
         // 双重保障注入 Reactor Context：
         // 1. sessionId → Tool 通过 Redis 反查 patientId
         // 2. patientId → Redis 不可用时直接兜底
@@ -226,7 +230,8 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                     updateMemoryCreateTimes(finalSessionId, userTime, LocalDateTime.now());
                     saveConsultRecord(finalSessionId);
                 })
-                .doOnCancel(() -> log.info("AI问诊流被取消, sessionId: {}", finalSessionId));
+                .doOnCancel(() -> log.info("AI问诊流被取消, sessionId: {}", finalSessionId))
+                .doFinally(signalType -> PatientContextHolder.clear());
     }
     
     /**
@@ -244,8 +249,8 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
 
                 ## 当前患者
                 当前对话的患者的唯一标识ID为：%d。
-                调用预约操作类工具（getMyAppointments / createAppointment / cancelAppointment）时，
-                系统会自动识别患者身份，你无需手动传递患者ID。
+                **重要**：调用预约操作类工具（getMyAppointments / createAppointment / cancelAppointment）时，
+                必须将上述患者ID作为 patientId 参数传入，否则工具无法识别当前患者。
 
                 ## 身份
                 您是一位专业、友善的AI医疗助手，服务于本院患者。您可以进行健康咨询、症状分析，并帮助患者查询医院信息、预约挂号。
@@ -262,10 +267,10 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 - getDoctorSchedules: 查医生排班
                 - getAvailableSchedules: 查可预约排班
 
-                **预约操作类（自动识别患者身份）**
-                - getMyAppointments: 查患者预约，可按状态筛选
-                - createAppointment: 创建预约，只需排班ID
-                - cancelAppointment: 取消预约，只需预约ID
+                **预约操作类（需要传入患者ID）**
+                - getMyAppointments: 查患者预约，需传入 patientId，可选 status 筛选
+                - createAppointment: 创建预约，需传入 patientId 和 scheduleId
+                - cancelAppointment: 取消预约，需传入 patientId 和 appointmentId
 
                 ## 对话原则
                 1. **自然对话**: 像真人医生一样交流，避免机械回复
