@@ -59,8 +59,13 @@ public class AiRagController {
     @PostMapping("/import-built-in")
     public Result<String> importBuiltIn() {
         try {
-            String knowledgeDir = "../docs/knowledge";
-            int total = aiRagService.importMarkdownFiles(knowledgeDir);
+            int total = aiRagService.importBuiltInKnowledge();
+            if (total == -1) {
+                return Result.error("VectorStore 未初始化，请检查 PostgreSQL + pgvector 是否正常运行");
+            }
+            if (total == 0) {
+                return Result.error("导入失败：0 个文档片段入库，请检查语料文件是否存在");
+            }
             return Result.success("成功导入 " + total + " 个文档片段", String.valueOf(total));
         } catch (Exception e) {
             log.error("导入内置语料失败", e);

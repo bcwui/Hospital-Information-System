@@ -13,6 +13,8 @@ import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -130,6 +132,40 @@ public class AiRagServiceImpl implements IAiRagService {
         }
     }
 
+    @Override
+    public int importBuiltInKnowledge() {
+        VectorStore vectorStore = vectorStoreProvider.getIfAvailable();
+        if (vectorStore == null) {
+            log.error("VectorStore 未初始化，无法导入内置语料（请检查 PostgreSQL + pgvector 连接）");
+            return -1;
+        }
+        try {
+            Resource[] resources = new PathMatchingResourcePatternResolver()
+                    .getResources("classpath:knowledge/*.md");
+            if (resources.length == 0) {
+                log.warn("classpath:knowledge/ 下未找到 .md 语料文件");
+                return 0;
+            }
+            int total = 0;
+            for (Resource resource : resources) {
+                String filename = resource.getFilename();
+                String content = resource.getContentAsString(StandardCharsets.UTF_8);
+                if (content == null || content.isBlank()) continue;
+                List<Document> chunks = splitMarkdown(content, filename != null ? filename : "unknown.md");
+                if (chunks.isEmpty()) continue;
+                vectorStore.add(chunks);
+                total += chunks.size();
+                log.info("语料入库成功: {}, {} 个分块", filename, chunks.size());
+            }
+            log.info("内置语料全部入库完成，共 {} 个分块", total);
+            return total;
+        } catch (Exception e) {
+            log.error("导入内置语料失败: {}", e.getMessage(), e);
+            return 0;
+        }
+    }
+
+    /* 保留旧方法兼容（如果有其他地方调用） */
     @Override
     public int importMarkdownFiles(String directoryPath) {
         VectorStore vectorStore = vectorStoreProvider.getIfAvailable();

@@ -24,6 +24,12 @@ public interface IAiRagService {
     int uploadPdf(MultipartFile file);
 
     /**
+     * 从 classpath:knowledge/ 导入内置 Markdown 语料
+     * @return 入库的文档片段总数，-1 表示 VectorStore 未初始化
+     */
+    int importBuiltInKnowledge();
+
+    /**
      * 从目录批量导入 Markdown 文件
      * @param directoryPath 目录路径
      * @return 入库的文档片段总数
