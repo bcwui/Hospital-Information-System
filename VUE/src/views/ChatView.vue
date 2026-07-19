@@ -67,12 +67,25 @@
             <div class="message-sender">{{ message.sender === 'user' ? '你' : 'AI助手' }}</div>
             <div class="message-text">
               <template v-if="message.sender === 'ai'">
-                <div class="markdown-content" v-html="parseMarkdown(message.text)"></div>
+                <template v-for="(block, bi) in message.blocks" :key="bi">
+                  <div v-if="block.type === 'text'" class="markdown-content" v-html="parseMarkdown(block.content)"></div>
+                  <ToolStepBlock v-else-if="block.type === 'toolStep'" :step="block" />
+                  <!-- card and ref blocks handled in Task 4/5 -->
+                  <div v-else-if="block.type === 'card'" class="card-placeholder">[卡片: {{ block.cardType }}]</div>
+                  <div v-else-if="block.type === 'ref'" class="ref-placeholder">[引用来源: {{ block.sources?.length }} 条]</div>
+                  <div v-else-if="block.type === 'error'" class="error-block">
+                    <span class="error-text">{{ block.message }}</span>
+                  </div>
+                </template>
+                <div class="typing-indicator" v-if="isLoading && index === messages.length - 1">
+                  <span></span><span></span><span></span>
+                </div>
               </template>
-              <template v-else>{{ message.text }}</template>
-              <div class="typing-indicator" v-if="message.sender === 'ai' && isLoading && index === messages.length - 1">
-                <span></span><span></span><span></span>
-              </div>
+              <template v-else>
+                <template v-for="block in message.blocks" :key="block.type">
+                  <span v-if="block.type === 'text'">{{ block.content }}</span>
+                </template>
+              </template>
             </div>
           </div>
         </div>
@@ -105,6 +118,8 @@ import { ElMessage } from 'element-plus';
 import { marked } from 'marked';
 import meAvatar from '@/assets/me.png';
 import aiAvatar from '@/assets/AIavator.png';
+import type { AiEvent, ChatMessage, MessageBlock, RefSource } from '@/types/chat'
+import ToolStepBlock from '@/components/chat/ToolStepBlock.vue'
 
 marked.setOptions({
   breaks: true,
@@ -133,10 +148,10 @@ const props = defineProps({
 
 const avatars = [meAvatar, aiAvatar];
 
-const messages = reactive([
+const messages = reactive<ChatMessage[]>([
   {
     sender: 'ai',
-    text: '你好！有什么我可以帮助你的吗？',
+    blocks: [{ type: 'text', content: '你好！有什么我可以帮助你的吗？' }],
   },
 ]);
 
@@ -180,29 +195,88 @@ const pushHistory = (historyList: ChatHistoryEntry[]) => {
     if (index === 0) { return; }
     messages.push({
       sender: item.role === 'user' ? 'user' : 'ai',
-      text: item.content,
-    });
-  });
-  scrollToBottom();
+      blocks: [{ type: 'text', content: item.content }],
+    })
+  })
+  scrollToBottom()
 };
 
 const resetMessages = () => {
-  messages.length = 0;
+  messages.length = 0
   messages.push({
     sender: 'ai',
-    text: '你好！有什么我可以帮助你的吗？',
-  });
+    blocks: [{ type: 'text', content: '你好！有什么我可以帮助你的吗？' }],
+  })
 };
 
-const handleStreamMessage = (value: string) => {
-  const last = messages[messages.length - 1];
-  if (!last || last.sender === 'user') {
-    messages.push({ sender: 'ai', text: value });
-  } else {
-    last.text += value;
+const handleStreamEvent = (event: AiEvent) => {
+  const last = messages[messages.length - 1]
+
+  switch (event.type) {
+    case 'text': {
+      if (!last || last.sender === 'user') {
+        messages.push({ sender: 'ai', blocks: [{ type: 'text', content: event.content || '' }] })
+      } else {
+        const lastBlock = last.blocks[last.blocks.length - 1]
+        if (lastBlock && lastBlock.type === 'text') {
+          (lastBlock as { type: 'text'; content: string }).content += event.content || ''
+        } else {
+          last.blocks.push({ type: 'text', content: event.content || '' })
+        }
+      }
+      break
+    }
+    case 'tool_call': {
+      if (last && last.sender === 'ai') {
+        last.blocks.push({
+          type: 'toolStep',
+          toolName: event.toolName || '',
+          label: event.toolLabel || event.toolName || '',
+          status: 'running',
+        })
+      }
+      break
+    }
+    case 'tool_result': {
+      if (last && last.sender === 'ai') {
+        const toolSteps = last.blocks.filter(b => b.type === 'toolStep') as Extract<MessageBlock, { type: 'toolStep' }>[]
+        for (let i = toolSteps.length - 1; i >= 0; i--) {
+          if (toolSteps[i].toolName === event.toolName && toolSteps[i].status === 'running') {
+            toolSteps[i].status = event.status === 'success' ? 'success' : 'error'
+            break
+          }
+        }
+      }
+      break
+    }
+    case 'card': {
+      if (last && last.sender === 'ai') {
+        last.blocks.push({ type: 'card', cardType: event.cardType || '', data: event.data })
+      }
+      break
+    }
+    case 'ref': {
+      if (last && last.sender === 'ai') {
+        last.blocks.push({ type: 'ref', sources: event.sources || [] })
+      }
+      break
+    }
+    case 'error': {
+      if (last && last.sender === 'ai') {
+        last.blocks.push({ type: 'error', message: event.message || '发生未知错误' })
+      }
+      break
+    }
+    case 'done': {
+      if (event.sessionId) {
+        currentSessionId.value = event.sessionId
+        loadSessionList()
+      }
+      break
+    }
   }
-  scrollToBottom();
-};
+  scrollToBottom()
+}
 
 const loadSessionList = async () => {
   try {
@@ -252,7 +326,7 @@ const sendMessage = async () => {
     ElMessage.error('缺少患者信息');
     return;
   }
-  messages.push({ sender: 'user', text: trimmed });
+  messages.push({ sender: 'user', blocks: [{ type: 'text', content: trimmed }] });
   newMessage.value = '';
   scrollToBottom();
   isLoading.value = true;
@@ -299,14 +373,29 @@ const sendMessage = async () => {
       buffer = lines.pop() || '';
       for (const line of lines) {
         if (line.startsWith('data:')) {
-          const text = line.slice(5).trim();
-          if (text) { handleStreamMessage(text); }
+          const text = line.slice(5).trim()
+          if (text) {
+            try {
+              const event: AiEvent = JSON.parse(text)
+              handleStreamEvent(event)
+            } catch {
+              // Backward compat: treat as plain text
+              handleStreamEvent({ type: 'text', content: text })
+            }
+          }
         }
       }
     }
     if (buffer.startsWith('data:')) {
-      const text = buffer.slice(5).trim();
-      if (text) { handleStreamMessage(text); }
+      const text = buffer.slice(5).trim()
+      if (text) {
+        try {
+          const event: AiEvent = JSON.parse(text)
+          handleStreamEvent(event)
+        } catch {
+          handleStreamEvent({ type: 'text', content: text })
+        }
+      }
     }
   } catch (error: unknown) {
     if ((error as Error).name === 'AbortError') { return; }
@@ -759,6 +848,31 @@ onUnmounted(() => {
 
 .message.user .markdown-content:deep(*) {
   color: rgba(255, 255, 255, 0.95);
+}
+
+.card-placeholder, .ref-placeholder {
+  padding: 8px 12px;
+  margin: 4px 0;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  background: #f8fafc;
+  border: 1px dashed #e2e8f0;
+}
+.error-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  margin: 4px 0;
+}
+.error-text {
+  color: #dc2626;
+  font-size: 0.82rem;
+  flex: 1;
 }
 
 @media (max-width: 768px) {
