@@ -75,6 +75,7 @@
                   <ReferenceBlock v-else-if="block.type === 'ref'" :sources="block.sources" />
                   <div v-else-if="block.type === 'error'" class="error-block">
                     <span class="error-text">{{ block.message }}</span>
+                    <button class="retry-btn" @click="retryLastMessage">重试</button>
                   </div>
                 </template>
                 <div class="typing-indicator" v-if="isLoading && index === messages.length - 1">
@@ -104,6 +105,7 @@
           </svg>
           <span v-else class="sending-spinner"></span>
         </button>
+        <button v-if="isLoading" class="stop-btn" @click="stopGeneration">停止</button>
       </div>
     </div>
   </div>
@@ -407,6 +409,28 @@ const sendMessage = async () => {
     isLoading.value = false;
   }
 };
+
+const retryLastMessage = () => {
+  // Find the last user message text content
+  const lastUser = [...messages].reverse().find(m => m.sender === 'user')
+  if (lastUser) {
+    const textBlocks = lastUser.blocks.filter(b => b.type === 'text') as { type: 'text'; content: string }[]
+    const lastText = textBlocks.length > 0 ? textBlocks[textBlocks.length - 1].content : ''
+    // Remove the last AI message (which had the error)
+    if (messages.length > 0 && messages[messages.length - 1].sender === 'ai') {
+      messages.pop()
+    }
+    if (lastText) {
+      newMessage.value = lastText
+      sendMessage()
+    }
+  }
+}
+
+const stopGeneration = () => {
+  abortController.value?.abort()
+  isLoading.value = false
+}
 
 const handleBookSchedule = async (scheduleId: number) => {
   const patientId = getPatientId()
@@ -843,6 +867,19 @@ onUnmounted(() => {
   }
 }
 
+.stop-btn {
+  padding: 8px 16px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  &:hover { background: #dc2626; }
+}
+
 .sending-spinner {
   width: 20px;
   height: 20px;
@@ -900,6 +937,17 @@ onUnmounted(() => {
   color: #dc2626;
   font-size: 0.82rem;
   flex: 1;
+}
+.retry-btn {
+  padding: 4px 12px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  &:hover { background: #b91c1c; }
 }
 
 @media (max-width: 768px) {
