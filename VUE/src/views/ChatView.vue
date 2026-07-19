@@ -213,11 +213,18 @@ const resetMessages = () => {
   })
 };
 
-const handleStreamEvent = (event: AiEvent) => {
+// 确保最后一条是 AI 消息，若没有则创建一个空块列表的
+const ensureAiMessage = () => {
   const last = messages[messages.length - 1]
+  if (!last || last.sender !== 'ai') {
+    messages.push({ sender: 'ai', blocks: [] })
+  }
+}
 
+const handleStreamEvent = (event: AiEvent) => {
   switch (event.type) {
     case 'text': {
+      const last = messages[messages.length - 1]
       if (!last || last.sender === 'user') {
         messages.push({ sender: 'ai', blocks: [{ type: 'text', content: event.content || '' }] })
       } else {
@@ -231,49 +238,46 @@ const handleStreamEvent = (event: AiEvent) => {
       break
     }
     case 'tool_call': {
-      if (last && last.sender === 'ai') {
-        last.blocks.push({
-          type: 'toolStep',
-          toolName: event.toolName || '',
-          label: event.toolLabel || event.toolName || '',
-          status: 'running',
-        })
-      }
+      ensureAiMessage()
+      messages[messages.length - 1].blocks.push({
+        type: 'toolStep',
+        toolName: event.toolName || '',
+        label: event.toolLabel || event.toolName || '',
+        status: 'running',
+      })
       break
     }
     case 'tool_result': {
-      if (last && last.sender === 'ai') {
-        const toolSteps = last.blocks.filter(b => b.type === 'toolStep') as Extract<MessageBlock, { type: 'toolStep' }>[]
-        for (let i = toolSteps.length - 1; i >= 0; i--) {
-          if (toolSteps[i].toolName === event.toolName && toolSteps[i].status === 'running') {
-            toolSteps[i].status = event.status === 'success' ? 'success' : 'error'
-            break
-          }
+      ensureAiMessage()
+      const last = messages[messages.length - 1]
+      const toolSteps = last.blocks.filter(b => b.type === 'toolStep') as Extract<MessageBlock, { type: 'toolStep' }>[]
+      for (let i = toolSteps.length - 1; i >= 0; i--) {
+        if (toolSteps[i].toolName === event.toolName && toolSteps[i].status === 'running') {
+          toolSteps[i].status = event.status === 'success' ? 'success' : 'error'
+          break
         }
       }
       break
     }
     case 'card': {
-      if (last && last.sender === 'ai') {
-        last.blocks.push({ type: 'card', cardType: event.cardType || '', data: event.data })
-      }
+      ensureAiMessage()
+      messages[messages.length - 1].blocks.push({ type: 'card', cardType: event.cardType || '', data: event.data })
       break
     }
     case 'ref': {
-      if (last && last.sender === 'ai') {
-        last.blocks.push({ type: 'ref', sources: event.sources || [] })
-      }
+      ensureAiMessage()
+      messages[messages.length - 1].blocks.push({ type: 'ref', sources: event.sources || [] })
       break
     }
     case 'error': {
-      if (last && last.sender === 'ai') {
-        last.blocks.push({ type: 'error', message: event.message || '发生未知错误' })
-      }
+      ensureAiMessage()
+      messages[messages.length - 1].blocks.push({ type: 'error', message: event.message || '发生未知错误' })
       break
     }
     case 'done': {
       if (event.sessionId) {
         currentSessionId.value = event.sessionId
+        chatHistoryStore.addId(patientIdStr.value, event.sessionId)
         loadSessionList()
       }
       break

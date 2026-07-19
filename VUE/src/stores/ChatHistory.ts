@@ -1,48 +1,59 @@
 import { defineStore } from "pinia";
-import { reactive } from "vue";
 
 interface SessionIdObj {
   time: number;
   sessionId: string;
 }
 
+const STORAGE_KEY = "his_chat_sessions";
+
+function loadFromStorage(): Map<string, SessionIdObj> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const entries: [string, SessionIdObj][] = JSON.parse(raw);
+      // 过滤掉已过期的（超过1小时）
+      const now = Date.now();
+      const valid = entries.filter(([, v]) => now - v.time < 60 * 60 * 1000);
+      return new Map(valid);
+    }
+  } catch { /* ignore */ }
+  return new Map();
+}
+
+function saveToStorage(map: Map<string, SessionIdObj>) {
+  try {
+    const entries = Array.from(map.entries());
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  } catch { /* ignore */ }
+}
+
 export const useChatHistoryStore = defineStore("chatHistory", () => {
-  // 使用 patientId 作为 key 存储会话ID
-  const sessionIdMap = reactive(new Map<string, SessionIdObj>());
+  const sessionIdMap = loadFromStorage();
 
   const addId = (patientId: string, sessionId: string) => {
-    const newId: SessionIdObj = {
-      sessionId,
-      time: new Date().getTime(),
-    };
-    sessionIdMap.set(patientId, newId);
+    sessionIdMap.set(patientId, { sessionId, time: Date.now() });
+    saveToStorage(sessionIdMap);
   };
 
   const getId = (patientId: string) => {
-    const idObj = sessionIdMap.get(patientId);
-    if (!idObj) {
-      return "";
-    }
-    // 会话超过1小时过期
-    if (new Date().getTime() - idObj.time > 60 * 60 * 1000) {
+    const obj = sessionIdMap.get(patientId);
+    if (!obj) return "";
+    if (Date.now() - obj.time > 60 * 60 * 1000) {
       sessionIdMap.delete(patientId);
+      saveToStorage(sessionIdMap);
       return "";
     }
-
-    idObj.time = new Date().getTime();
-
-    return idObj.sessionId;
+    // 续期
+    obj.time = Date.now();
+    saveToStorage(sessionIdMap);
+    return obj.sessionId;
   };
 
-  // 清除会话，用于新建对话
   const clearSession = (patientId: string) => {
     sessionIdMap.delete(patientId);
+    saveToStorage(sessionIdMap);
   };
 
-  return {
-    sessionIdMap,
-    addId,
-    getId,
-    clearSession,
-  };
+  return { sessionIdMap, addId, getId, clearSession };
 });
