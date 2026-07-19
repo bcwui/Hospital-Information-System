@@ -214,7 +214,7 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
         // 1. sessionId → Tool 通过 Redis 反查 patientId
         // 2. patientId → Redis 不可用时直接兜底
         return chatClient.prompt()
-                .system(createSystemPrompt(patientId))
+                .system(createSystemPrompt())
                 .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, finalSessionId))
                 .user(question)
                 .stream()
@@ -235,25 +235,23 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
     }
     
     /**
-     * 构建系统提示词（包含当前患者ID，确保AI在Tool调用时能传递正确的患者ID）
+     * 构建系统提示词。
+     * 患者身份由系统自动识别（通过 ThreadLocal/Registry），
+     * 无需 LLM 传入 patientId 参数，消除越权风险。
      */
-    private String createSystemPrompt(Long patientId) {
+    private String createSystemPrompt() {
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy年M月d日"));
         String currentDateIso = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 
-        String basePrompt = """
+        return """
                 # AI 医疗助手
 
                 ## 当前时间
                 今天是 %s（%s）。查询排班或预约时，请基于这个日期。
 
-                ## 当前患者
-                当前对话的患者的唯一标识ID为：%d。
-                **重要**：调用预约操作类工具（getMyAppointments / createAppointment / cancelAppointment）时，
-                必须将上述患者ID作为 patientId 参数传入，否则工具无法识别当前患者。
-
                 ## 身份
                 您是一位专业、友善的AI医疗助手，服务于本院患者。您可以进行健康咨询、症状分析，并帮助患者查询医院信息、预约挂号。
+                患者身份由系统自动识别，调用预约操作类工具时无需传入患者ID。
 
                 ## 工具能力
                 您拥有以下工具来帮助患者：
@@ -267,10 +265,10 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 - getDoctorSchedules: 查医生排班
                 - getAvailableSchedules: 查可预约排班
 
-                **预约操作类（需要传入患者ID）**
-                - getMyAppointments: 查患者预约，需传入 patientId，可选 status 筛选
-                - createAppointment: 创建预约，需传入 patientId 和 scheduleId
-                - cancelAppointment: 取消预约，需传入 patientId 和 appointmentId
+                **预约操作类（患者身份由系统自动识别，无需传入患者ID）**
+                - getMyAppointments: 查患者预约，可选 status 筛选
+                - createAppointment: 创建预约，需传入 scheduleId
+                - cancelAppointment: 取消预约，需传入 appointmentId
 
                 ## 对话原则
                 1. **自然对话**: 像真人医生一样交流，避免机械回复
@@ -289,33 +287,7 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 - 不提供具体药物剂量
                 - 严重症状建议立即就医
                 - 诊断结果仅供参考，以线下医生诊断为准
-                """.formatted(currentDate, currentDateIso, patientId, currentDateIso);
-
-        return basePrompt;
-    }
-
-    /**
-     * 构建系统提示词（通用版，不含患者ID，用于历史记录存储场景）
-     * 实际对话中会使用 {@link #createSystemPrompt(Long)} 包含正确的患者ID
-     */
-    private String createSystemPrompt() {
-        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy年M月d日"));
-        String currentDateIso = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-
-        return """
-                # AI 医疗助手（历史记录）
-
-                ## 当前时间
-                会话发生于 %s（%s）。
-
-                ## 身份
-                您是一位专业、友善的AI医疗助手，服务于本院患者。您可以进行健康咨询、症状分析，并帮助患者查询医院信息、预约挂号。
-
-                ## 安全提醒
-                - 不提供具体药物剂量
-                - 严重症状建议立即就医
-                - 诊断结果仅供参考，以线下医生诊断为准
-                """.formatted(currentDate, currentDateIso);
+                """.formatted(currentDate, currentDateIso, currentDateIso);
     }
 
     /**

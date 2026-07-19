@@ -28,10 +28,12 @@ public interface IRegistrationService {
     
     /**
      * 发起AI问诊并流式返回回复内容
-     * @param request 问诊请求
+     * @param patientId 患者ID（由 Controller 从 Sa-Token 登录态解析，不信任前端传入）
+     * @param sessionId 会话ID
+     * @param question 用户问题
      * @return AI回复流
      */
-    Flux<String> streamAiConsult(AiConsultRequest request);
+    Flux<String> streamAiConsult(Long patientId, String sessionId, String question);
 
     /**
      * 获取患者最近的AI问诊会话

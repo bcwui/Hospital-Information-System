@@ -68,20 +68,26 @@ public class RegistrationServiceImpl implements IRegistrationService {
     private final IUserService userService;
     
     @Override
-    public Flux<String> streamAiConsult(AiConsultRequest request) {
-        log.info("发起AI问诊流式请求, patientId: {}, sessionId: {}", request.getPatientId(), request.getSessionId());
+    public Flux<String> streamAiConsult(Long patientId, String sessionId, String question) {
+        log.info("发起AI问诊流式请求, patientId: {}, sessionId: {}", patientId, sessionId);
 
         // 参数验证
-        if (request.getPatientId() == null) {
+        if (patientId == null) {
             throw new IllegalArgumentException("患者ID不能为空");
         }
 
-        if (request.getQuestion() == null || request.getQuestion().trim().isEmpty()) {
+        if (question == null || question.trim().isEmpty()) {
             throw new IllegalArgumentException("问题内容不能为空");
         }
 
+        AiConsultRequest request = AiConsultRequest.builder()
+                .patientId(patientId)
+                .sessionId(sessionId)
+                .question(question)
+                .build();
+
         Flux<String> stream = aiService.processAiConsult(request);
-        log.info("AI问诊流式请求已发起, sessionId: {}", request.getSessionId());
+        log.info("AI问诊流式请求已发起, sessionId: {}", sessionId);
 
         return stream;
     }

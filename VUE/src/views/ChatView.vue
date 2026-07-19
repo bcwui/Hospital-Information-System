@@ -205,11 +205,9 @@ const handleStreamMessage = (value: string) => {
 };
 
 const loadSessionList = async () => {
-  const patientId = getPatientId();
-  if (!patientId) return;
   try {
     const res = await DoAxiosWithErro<SessionSummary[]>(
-      '/appointment/ai-consult/sessions', 'get', { patientId }, true
+      '/appointment/ai-consult/sessions', 'get', null, true
     );
     sessionList.value = res || [];
   } catch (error) {
@@ -272,7 +270,6 @@ const sendMessage = async () => {
         'sa-token-authorization': tokenValue,
       },
       body: JSON.stringify({
-        patientId,
         question: trimmed,
         sessionId: chatHistoryStore.getId(patientIdStr.value) || null,
       }),
@@ -342,7 +339,7 @@ onMounted(async () => {
   }
   try {
     const response = await DoAxiosWithErro<{ sessionId?: string; messageHistory?: ChatHistoryEntry[] }>(
-      '/appointment/ai-consult/latest', 'get', { patientId }, true
+      '/appointment/ai-consult/latest', 'get', null, true
     );
     if (response?.sessionId) {
       chatHistoryStore.addId(patientIdStr.value, response.sessionId);

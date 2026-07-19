@@ -120,6 +120,19 @@ public class RegistrationController {
     }
     
     /**
+     * 从 Sa-Token 登录态解析当前患者ID。
+     * 患者身份只能从登录态获取，不接受前端传入，消除越权风险。
+     */
+    private Long resolvePatientIdFromLogin() {
+        if (!StpUtil.isLogin()) {
+            return null;
+        }
+        Long userId = StpUtil.getLoginIdAsLong();
+        Patient patient = registrationService.getPatientByUserId(userId);
+        return patient != null ? patient.getPatientId() : null;
+    }
+
+    /**
      * 发起AI问诊并流式返回内容
      *
      * 使用简化的 SSE 协议，直接输出模型的分段内容。
@@ -130,9 +143,11 @@ public class RegistrationController {
     @SaCheckRole("patient")
     @PostMapping(value = "/ai-consult/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<Flux<String>> streamAiConsult(@RequestBody AiConsultRequest request) {
-        log.info("接收到AI问诊流式请求, patientId: {}, sessionId: {}", request.getPatientId(), request.getSessionId());
+        Long patientId = resolvePatientIdFromLogin();
+        log.info("接收到AI问诊流式请求, patientId: {}, sessionId: {}", patientId, request.getSessionId());
         try {
-            Flux<String> stream = registrationService.streamAiConsult(request);
+            Flux<String> stream = registrationService.streamAiConsult(patientId,
+                    request.getSessionId(), request.getQuestion());
             HttpHeaders headers = new HttpHeaders();
             if (request.getSessionId() != null && !request.getSessionId().isEmpty()) {
                 headers.add("X-Session-Id", request.getSessionId());
@@ -157,14 +172,15 @@ public class RegistrationController {
     /**
      * 获取患者最近的AI问诊会话
      *
-     * 从数据库获取患者最近的会话记录，用于恢复对话
+     * 从数据库获取患者最近的会话记录，用于恢复对话。
+     * 患者ID从登录态自动获取，不接受前端传入。
      *
-     * @param patientId 患者ID
      * @return 会话详情，包含完整对话历史
      */
     @SaCheckRole("patient")
     @GetMapping("/ai-consult/latest")
-    public Result<ConsultSession> getLatestAiConsultSession(@RequestParam Long patientId) {
+    public Result<ConsultSession> getLatestAiConsultSession() {
+        Long patientId = resolvePatientIdFromLogin();
         log.info("接收到获取患者最近AI问诊会话请求, patientId: {}", patientId);
         try {
             ConsultSession session = registrationService.getLatestAiConsultSession(patientId);
@@ -184,12 +200,14 @@ public class RegistrationController {
     /**
      * 获取患者的所有AI问诊会话列表
      *
-     * @param patientId 患者ID
+     * 患者ID从登录态自动获取，不接受前端传入。
+     *
      * @return 会话摘要列表
      */
     @SaCheckRole("patient")
     @GetMapping("/ai-consult/sessions")
-    public Result<java.util.List<java.util.Map<String, Object>>> listAiConsultSessions(@RequestParam Long patientId) {
+    public Result<java.util.List<java.util.Map<String, Object>>> listAiConsultSessions() {
+        Long patientId = resolvePatientIdFromLogin();
         log.info("接收到获取AI问诊会话列表请求, patientId: {}", patientId);
         try {
             java.util.List<java.util.Map<String, Object>> sessions = registrationService.listAiConsultSessions(patientId);
@@ -213,11 +231,16 @@ public class RegistrationController {
     @GetMapping("/ai-consult/history")
     public Result<ConsultSession> getAiConsultHistory(
             @RequestParam String sessionId) {
+        Long currentPatientId = resolvePatientIdFromLogin();
         log.info("接收到获取AI问诊历史会话请求, sessionId: {}", sessionId);
         try {
             ConsultSession session = registrationService.getAiConsultHistory(sessionId);
             if (session == null) {
                 return Result.error("未找到相关会话记录");
+            }
+            if (!currentPatientId.equals(session.getPatientId())) {
+                log.warn("患者 {} 试图访问不属于自己的会话 {}", currentPatientId, sessionId);
+                return Result.error("无权访问此会话");
             }
             return Result.success("获取会话记录成功", session);
         } catch (IllegalArgumentException e) {

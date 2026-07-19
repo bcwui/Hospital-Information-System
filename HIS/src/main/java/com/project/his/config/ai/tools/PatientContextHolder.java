@@ -40,8 +40,7 @@ public class PatientContextHolder {
      * <p>
      * 策略：
      * 1. ThreadLocal sessionId → 查 Registry（同线程最优）
-     * 2. Registry 仅有一个条目 → 直接返回（单用户场景）
-     * 3. 多个条目且无法区分 → 返回 null
+     * 2. 跨线程有多个会话时无法确定，返回 null
      */
     public static Long resolveFromRegistry() {
         // 同线程优先
@@ -52,13 +51,17 @@ public class PatientContextHolder {
                 return patientId;
             }
         }
-
-        // 跨线程兜底：只有一个活跃会话时可直接确定
-        if (SESSION_REGISTRY.size() == 1) {
-            return SESSION_REGISTRY.values().iterator().next();
-        }
-
+        // 跨线程有多个会话时无法确定，返回 null
         return null;
+    }
+
+    /**
+     * 清理指定会话的注册信息（供外部调用）
+     */
+    public static void removeSession(String sessionId) {
+        if (sessionId != null) {
+            SESSION_REGISTRY.remove(sessionId);
+        }
     }
 
     public static void clear() {

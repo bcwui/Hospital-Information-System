@@ -37,46 +37,36 @@ public class AppointmentTools {
     }
 
     /**
-     * 解析患者ID。优先使用 LLM 传入的 patientId，
-     * 其次通过 ThreadLocal / ConcurrentHashMap 兜底。
-     * <p>
-     * 不再依赖 ThreadLocal 中的 sessionId 做 Redis 反查——因为 Tool 在 boundedElastic
-     * 线程执行，ThreadLocal 为空，拿不到 sessionId。
+     * 解析患者ID。通过 ThreadLocal / ConcurrentHashMap 获取，
+     * 不再接受 LLM 传入的 patientId（安全加固：患者身份由系统自动识别）。
      */
-    private Long resolvePatientId(Long llmPatientId) {
-        // 1. LLM 传入的 patientId（最优先，来自系统提示词，跨线程可靠）
-        if (llmPatientId != null && llmPatientId > 0) {
-            log.info("通过 LLM 参数获取 patientId={}", llmPatientId);
-            return llmPatientId;
-        }
-
-        // 2. ThreadLocal（同线程场景，备用）
+    private Long resolvePatientId() {
+        // 1. ThreadLocal（同线程场景）
         Long patientId = PatientContextHolder.getPatientId();
         if (patientId != null && patientId > 0) {
             log.info("通过 ThreadLocal 获取 patientId={}", patientId);
             return patientId;
         }
 
-        // 3. ConcurrentHashMap 跨线程解析（不需要知道 sessionId）
+        // 2. ConcurrentHashMap 跨线程解析（不需要知道 sessionId）
         patientId = PatientContextHolder.resolveFromRegistry();
         if (patientId != null && patientId > 0) {
             log.info("通过 SessionRegistry 跨线程解析 patientId={}", patientId);
             return patientId;
         }
 
-        log.error("无法获取 patientId：LLM参数={}, ThreadLocal和Registry均不可用", llmPatientId);
+        log.error("无法获取 patientId，ThreadLocal和Registry均不可用");
         return null;
     }
 
     /**
      * 查询当前患者的预约记录
      */
-    @Tool(description = "查询当前患者的预约挂号记录，可按状态筛选：0-待就诊，1-已就诊，2-已取消")
+    @Tool(description = "查询当前患者的预约挂号记录，可按状态筛选：0-待就诊，1-已就诊，2-已取消。患者身份由系统自动识别。")
     public String getMyAppointments(
-            @ToolParam(description = "当前患者ID（从系统提示词中获取）") Long patientId,
             @ToolParam(description = "预约状态筛选，可选值：0-待就诊，1-已就诊，2-已取消，不传则查询全部") Integer status) {
 
-        Long resolvedId = resolvePatientId(patientId);
+        Long resolvedId = resolvePatientId();
         if (resolvedId == null) {
             return "无法获取当前患者信息，请确保已登录。如果问题持续，请刷新页面重新进入。";
         }
@@ -109,16 +99,15 @@ public class AppointmentTools {
     /**
      * 为当前患者创建预约
      */
-    @Tool(description = "为当前患者创建预约挂号。patientId 从系统提示词获取，scheduleId 从排班查询结果获取。")
+    @Tool(description = "为当前患者创建预约挂号。患者身份由系统自动识别，scheduleId 从排班查询结果获取。")
     public String createAppointment(
-            @ToolParam(description = "当前患者ID（从系统提示词中获取）") Long patientId,
             @ToolParam(description = "排班ID，可通过查询医生排班获取") Long scheduleId) {
 
         if (scheduleId == null) {
             return "请提供排班ID";
         }
 
-        Long resolvedId = resolvePatientId(patientId);
+        Long resolvedId = resolvePatientId();
         if (resolvedId == null) {
             return "无法获取当前患者信息，请确保已登录。如果问题持续，请刷新页面重新进入。";
         }
@@ -154,16 +143,15 @@ public class AppointmentTools {
     /**
      * 取消当前患者的预约
      */
-    @Tool(description = "取消当前患者的预约挂号。patientId 从系统提示词获取，appointmentId 从预约记录中获取。")
+    @Tool(description = "取消当前患者的预约挂号。患者身份由系统自动识别，appointmentId 从预约记录中获取。")
     public String cancelAppointment(
-            @ToolParam(description = "当前患者ID（从系统提示词中获取）") Long patientId,
             @ToolParam(description = "要取消的预约ID") Long appointmentId) {
 
         if (appointmentId == null) {
             return "请提供要取消的预约ID";
         }
 
-        Long resolvedId = resolvePatientId(patientId);
+        Long resolvedId = resolvePatientId();
         if (resolvedId == null) {
             return "无法获取当前患者信息，请确保已登录。如果问题持续，请刷新页面重新进入。";
         }
