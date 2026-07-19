@@ -70,8 +70,8 @@
                 <template v-for="(block, bi) in message.blocks" :key="bi">
                   <div v-if="block.type === 'text'" class="markdown-content" v-html="parseMarkdown(block.content)"></div>
                   <ToolStepBlock v-else-if="block.type === 'toolStep'" :step="block" />
-                  <!-- card and ref blocks handled in Task 4/5 -->
-                  <div v-else-if="block.type === 'card'" class="card-placeholder">[卡片: {{ block.cardType }}]</div>
+                  <CardMessage v-else-if="block.type === 'card'" :card-type="block.cardType" :data="block.data"
+                    @book="handleBookSchedule" @cancel="handleCancelAppointment" />
                   <div v-else-if="block.type === 'ref'" class="ref-placeholder">[引用来源: {{ block.sources?.length }} 条]</div>
                   <div v-else-if="block.type === 'error'" class="error-block">
                     <span class="error-text">{{ block.message }}</span>
@@ -120,6 +120,7 @@ import meAvatar from '@/assets/me.png';
 import aiAvatar from '@/assets/AIavator.png';
 import type { AiEvent, ChatMessage, MessageBlock, RefSource } from '@/types/chat'
 import ToolStepBlock from '@/components/chat/ToolStepBlock.vue'
+import CardMessage from '@/components/chat/CardMessage.vue'
 
 marked.setOptions({
   breaks: true,
@@ -405,6 +406,35 @@ const sendMessage = async () => {
     isLoading.value = false;
   }
 };
+
+const handleBookSchedule = async (scheduleId: number) => {
+  try {
+    await DoAxiosWithErro<any>(
+      `/appointment/create?scheduleId=${scheduleId}`, 'post', null, true
+    )
+    ElMessage.success('预约成功！')
+    messages.push({
+      sender: 'ai',
+      blocks: [{
+        type: 'card',
+        cardType: 'appointment_result',
+        data: { success: true, message: '预约成功！请按时就诊。' }
+      }]
+    })
+    scrollToBottom()
+  } catch (error: any) {
+    ElMessage.error(error?.response?.data?.message || '预约失败，请重试')
+  }
+}
+
+const handleCancelAppointment = async (appointmentId: number) => {
+  try {
+    await DoAxiosWithErro(`/appointment/cancel/${appointmentId}`, 'post', null, true)
+    ElMessage.success('预约已取消')
+  } catch (error: any) {
+    ElMessage.error(error?.response?.data?.message || '取消失败')
+  }
+}
 
 const getHistory = (sessionId: string) => {
   DoAxiosWithErro<{ messageHistory?: ChatHistoryEntry[] }>(
@@ -850,7 +880,7 @@ onUnmounted(() => {
   color: rgba(255, 255, 255, 0.95);
 }
 
-.card-placeholder, .ref-placeholder {
+.ref-placeholder {
   padding: 8px 12px;
   margin: 4px 0;
   border-radius: 8px;
