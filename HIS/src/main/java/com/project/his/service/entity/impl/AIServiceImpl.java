@@ -3,8 +3,12 @@ package com.project.his.service.entity.impl;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.project.his.common.Constants;
+import com.project.his.config.ai.event.AiEvent;
+import com.project.his.config.ai.event.AiEventSinkRegistry;
+import com.project.his.config.ai.event.ToolEventEmitter;
 import com.project.his.config.ai.tools.PatientContext;
 import com.project.his.config.ai.tools.PatientContextHolder;
+import com.project.his.config.ai.tools.ToolResultEmitterHolder;
 import com.project.his.domain.dto.*;
 import com.project.his.domain.po.AiConsultRecord;
 import com.project.his.mapper.AiConsultRecordMapper;
@@ -27,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -205,33 +210,61 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
         request.setSessionId(sessionId);
 
         final String finalSessionId = sessionId;
+
+        // 创建事件通道
+        Sinks.Many<AiEvent> eventSink = Sinks.many().multicast().onBackpressureBuffer();
+        AiEventSinkRegistry.register(finalSessionId, eventSink);
+        ToolEventEmitter emitter = new ToolEventEmitter(finalSessionId);
+        ToolResultEmitterHolder.set(emitter);
+
         final LocalDateTime userTime = LocalDateTime.now();
 
         // 设置 ThreadLocal 上下文，确保同步 Tool 方法能获取患者ID
         PatientContextHolder.set(patientId, finalSessionId);
 
-        // 双重保障注入 Reactor Context：
-        // 1. sessionId → Tool 通过 Redis 反查 patientId
-        // 2. patientId → Redis 不可用时直接兜底
-        return chatClient.prompt()
+        Flux<AiEvent> contentEvents = chatClient.prompt()
                 .system(createSystemPrompt())
                 .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, finalSessionId))
                 .user(question)
                 .stream()
                 .content()
+                .map(text -> AiEvent.builder().type("text").content(text).build())
                 .contextWrite(ctx -> ctx
                         .put(PatientContext.SESSION_ID_KEY, finalSessionId)
-                        .put(PatientContext.PATIENT_ID_KEY, patientId))
-                .doOnError(error -> {
-                    log.error("处理AI问诊请求异常: {}", error.getMessage());
-                    updateMemoryCreateTimes(finalSessionId, userTime, null);
-                })
+                        .put(PatientContext.PATIENT_ID_KEY, patientId));
+
+        Flux<AiEvent> toolEvents = eventSink.asFlux();
+
+        return Flux.merge(contentEvents, toolEvents)
                 .doOnComplete(() -> {
                     updateMemoryCreateTimes(finalSessionId, userTime, LocalDateTime.now());
                     saveConsultRecord(finalSessionId);
+                    emitter.emitDone();
+                    AiEventSinkRegistry.remove(finalSessionId);
                 })
-                .doOnCancel(() -> log.info("AI问诊流被取消, sessionId: {}", finalSessionId))
-                .doFinally(signalType -> PatientContextHolder.clear());
+                .doOnError(error -> {
+                    log.error("处理AI问诊请求异常: {}", error.getMessage());
+                    updateMemoryCreateTimes(finalSessionId, userTime, null);
+                    emitter.emitError(error.getMessage());
+                    saveConsultRecord(finalSessionId);
+                    AiEventSinkRegistry.remove(finalSessionId);
+                })
+                .doOnCancel(() -> {
+                    log.info("AI问诊流被取消, sessionId: {}", finalSessionId);
+                    saveConsultRecord(finalSessionId);
+                    AiEventSinkRegistry.remove(finalSessionId);
+                })
+                .doFinally(signalType -> {
+                    PatientContextHolder.clear();
+                    ToolResultEmitterHolder.clear();
+                })
+                .map(event -> {
+                    try {
+                        return com.alibaba.fastjson2.JSON.toJSONString(event);
+                    } catch (Exception e) {
+                        return "{\"type\":\"error\",\"message\":\"序列化失败\"}";
+                    }
+                });
     }
     
     /**
