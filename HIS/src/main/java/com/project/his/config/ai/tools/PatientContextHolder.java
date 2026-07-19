@@ -1,22 +1,23 @@
 package com.project.his.config.ai.tools;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 患者上下文持有者 — 三层保障机制。
+ * 患者上下文持有者 — 使用阿里 TransmittableThreadLocal。
  * <p>
- * 1. ThreadLocal：同线程直接读取
- * 2. ConcurrentHashMap：跨线程解析（不需要知道 sessionId）
- * <p>
- * 在 AIServiceImpl 中，每次 AI 调用前设置（写入 ThreadLocal + Map），调用后清除。
+ * TTL 在线程池（包括 Reactor boundedElastic）场景下自动传递上下文，
+ * 配合 {@code Schedulers.setExecutorServiceDecorator} 实现。
+ * ConcurrentHashMap 作为兜底。
  */
 public class PatientContextHolder {
 
-    private static final ThreadLocal<Long> PATIENT_ID = new ThreadLocal<>();
-    private static final ThreadLocal<String> SESSION_ID = new ThreadLocal<>();
+    private static final TransmittableThreadLocal<Long> PATIENT_ID = new TransmittableThreadLocal<>();
+    private static final TransmittableThreadLocal<String> SESSION_ID = new TransmittableThreadLocal<>();
 
-    /** 跨线程共享的 sessionId → patientId 映射 */
+    /** 跨线程共享的 sessionId → patientId 映射（兜底） */
     private static final ConcurrentMap<String, Long> SESSION_REGISTRY = new ConcurrentHashMap<>();
 
     public static void set(Long patientId, String sessionId) {
@@ -36,14 +37,10 @@ public class PatientContextHolder {
     }
 
     /**
-     * 跨线程解析 patientId——不需要事先知道 sessionId。
-     * <p>
-     * 策略：
-     * 1. ThreadLocal sessionId → 查 Registry（同线程最优）
-     * 2. 跨线程有多个会话时无法确定，返回 null
+     * 跨线程解析 patientId。
+     * 优先通过 TTL 传递的 sessionId 查 Registry，TTL 已在线程切换时自动复制。
      */
     public static Long resolveFromRegistry() {
-        // 同线程优先
         String sessionId = SESSION_ID.get();
         if (sessionId != null) {
             Long patientId = SESSION_REGISTRY.get(sessionId);
@@ -51,13 +48,9 @@ public class PatientContextHolder {
                 return patientId;
             }
         }
-        // 跨线程有多个会话时无法确定，返回 null
         return null;
     }
 
-    /**
-     * 清理指定会话的注册信息（供外部调用）
-     */
     public static void removeSession(String sessionId) {
         if (sessionId != null) {
             SESSION_REGISTRY.remove(sessionId);

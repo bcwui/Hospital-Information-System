@@ -156,6 +156,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- 阿里 TransmittableThreadLocal：解决线程池场景下 ThreadLocal 值跨线程传递 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
+            <version>2.14.5</version>
+        </dependency>
+
     </dependencies>
 
 

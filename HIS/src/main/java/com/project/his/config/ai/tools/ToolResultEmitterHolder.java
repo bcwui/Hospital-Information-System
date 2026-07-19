@@ -1,14 +1,14 @@
 package com.project.his.config.ai.tools;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import com.project.his.config.ai.event.ToolEventEmitter;
 
 /**
- * 跨线程传递 ToolEventEmitter。
- * AIServiceImpl 在每次请求时设置，Tool 方法通过此 Holder 获取。
+ * 跨线程传递 ToolEventEmitter，使用阿里 TransmittableThreadLocal。
  */
 public class ToolResultEmitterHolder {
 
-    private static final ThreadLocal<ToolEventEmitter> EMITTER = new ThreadLocal<>();
+    private static final TransmittableThreadLocal<ToolEventEmitter> EMITTER = new TransmittableThreadLocal<>();
 
     public static void set(ToolEventEmitter emitter) {
         EMITTER.set(emitter);
