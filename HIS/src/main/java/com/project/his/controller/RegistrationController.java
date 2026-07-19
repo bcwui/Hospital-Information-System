@@ -25,6 +25,7 @@ import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -238,7 +239,10 @@ public class RegistrationController {
             if (session == null) {
                 return Result.error("未找到相关会话记录");
             }
-            if (!currentPatientId.equals(session.getPatientId())) {
+            if (currentPatientId == null) {
+                return Result.error("无法获取当前患者信息");
+            }
+            if (!Objects.equals(currentPatientId, session.getPatientId())) {
                 log.warn("患者 {} 试图访问不属于自己的会话 {}", currentPatientId, sessionId);
                 return Result.error("无权访问此会话");
             }
