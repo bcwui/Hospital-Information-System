@@ -57,7 +57,7 @@ public class AiRagController {
      * 一键导入内置 Markdown 语料
      */
     @PostMapping("/import-built-in")
-    public Result<String> importBuiltIn() {
+    public Result<Integer> importBuiltIn() {
         try {
             int total = aiRagService.importBuiltInKnowledge();
             if (total == -1) {
@@ -66,7 +66,7 @@ public class AiRagController {
             if (total == 0) {
                 return Result.error("导入失败：0 个文档片段入库，请检查语料文件是否存在");
             }
-            return Result.success("成功导入 " + total + " 个文档片段", String.valueOf(total));
+            return Result.success(total);
         } catch (Exception e) {
             log.error("导入内置语料失败", e);
             return Result.error("导入失败: " + e.getMessage());

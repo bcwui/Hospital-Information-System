@@ -269,8 +269,8 @@ const handleSearch = async () => {
 const importBuiltIn = async () => {
   importing.value = true;
   try {
-    const res = await DoAxiosWithErro('/ai/rag/import-built-in', 'post', null, true);
-    ElMessage.success(res || '内置语料导入成功');
+    const count = await DoAxiosWithErro<number>('/ai/rag/import-built-in', 'post', null, true);
+    ElMessage.success(`内置语料导入成功，共 ${count} 个文档片段`);
   } catch (e) {
     ElMessage.error('导入失败');
   } finally {
