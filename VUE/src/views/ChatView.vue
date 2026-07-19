@@ -408,17 +408,20 @@ const sendMessage = async () => {
 };
 
 const handleBookSchedule = async (scheduleId: number) => {
+  const patientId = getPatientId()
+  if (!patientId) { ElMessage.error('缺少患者信息'); return }
   try {
-    await DoAxiosWithErro<any>(
-      `/appointment/create?scheduleId=${scheduleId}`, 'post', null, true
+    const res = await DoAxiosWithErro<any>(
+      `/appointment/create`, 'post', { patientId, scheduleId }, true
     )
+    const appointmentId = res?.appointmentId
     ElMessage.success('预约成功！')
     messages.push({
       sender: 'ai',
       blocks: [{
         type: 'card',
         cardType: 'appointment_result',
-        data: { success: true, message: '预约成功！请按时就诊。' }
+        data: { success: true, message: '预约成功！请按时就诊。', appointmentId }
       }]
     })
     scrollToBottom()
@@ -428,8 +431,10 @@ const handleBookSchedule = async (scheduleId: number) => {
 }
 
 const handleCancelAppointment = async (appointmentId: number) => {
+  const patientId = getPatientId()
+  if (!patientId) { ElMessage.error('缺少患者信息'); return }
   try {
-    await DoAxiosWithErro(`/appointment/cancel/${appointmentId}`, 'post', null, true)
+    await DoAxiosWithErro(`/appointment/cancel`, 'post', { appointmentId, patientId }, true)
     ElMessage.success('预约已取消')
   } catch (error: any) {
     ElMessage.error(error?.response?.data?.message || '取消失败')
