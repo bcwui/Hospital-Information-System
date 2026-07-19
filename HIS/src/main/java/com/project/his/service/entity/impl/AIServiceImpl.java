@@ -64,6 +64,8 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
 
     private final ChatMemoryRepository chatMemoryRepository;
 
+    private final org.springframework.core.io.ResourceLoader resourceLoader;
+
     private static final String META_CREATE_TIME = "createTime";
 
     private static final DateTimeFormatter META_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -275,6 +277,7 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
     
     /**
      * 构建系统提示词。
+     * 从 classpath:prompts/system-prompt.st 加载模板，替换日期占位符。
      * 患者身份由系统自动识别（通过 ThreadLocal/Registry），
      * 无需 LLM 传入 patientId 参数，消除越权风险。
      */
@@ -282,51 +285,30 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy年M月d日"));
         String currentDateIso = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 
-        return """
-                # AI 医疗助手
+        try {
+            org.springframework.core.io.Resource resource =
+                    resourceLoader.getResource("classpath:prompts/system-prompt.st");
+            String template = new String(resource.getInputStream().readAllBytes(),
+                    java.nio.charset.StandardCharsets.UTF_8);
+            return template
+                    .replace("{{currentDate}}", currentDate)
+                    .replace("{{currentDateIso}}", currentDateIso);
+        } catch (Exception e) {
+            log.error("加载 system-prompt 模板失败，使用默认 Prompt", e);
+            return """
+                    # AI 医疗助手
+                    今天是 %s。
+                    您是一位专业、友善的AI医疗助手，服务于仁康医院患者。
 
-                ## 当前时间
-                今天是 %s（%s）。查询排班或预约时，请基于这个日期。
+                    ## 场景规范
+                    1. 症状导诊：先了解详情 → searchKnowledgeBase 检索指南 → listDepartments 核对科室 → 推荐就诊
+                    2. 知识问答：searchKnowledgeBase 检索 → 基于引用回答
+                    3. 预约管理：操作前确认
 
-                ## 身份
-                您是一位专业、友善的AI医疗助手，服务于本院患者。您可以进行健康咨询、症状分析，并帮助患者查询医院信息、预约挂号。
-                患者身份由系统自动识别，调用预约操作类工具时无需传入患者ID。
-
-                ## 工具能力
-                您拥有以下工具来帮助患者：
-
-                **信息查询类**
-                - listDepartments: 获取医院科室列表
-                - listClinicsByDepartment: 按科室查门诊
-                - searchClinics: 搜索门诊
-                - listDoctorsByClinic: 按门诊查医生
-                - searchDoctors: 搜索医生
-                - getDoctorSchedules: 查医生排班
-                - getAvailableSchedules: 查可预约排班
-
-                **预约操作类（患者身份由系统自动识别，无需传入患者ID）**
-                - getMyAppointments: 查患者预约，可选 status 筛选
-                - createAppointment: 创建预约，需传入 scheduleId
-                - cancelAppointment: 取消预约，需传入 appointmentId
-
-                ## 对话原则
-                1. **自然对话**: 像真人医生一样交流，避免机械回复
-                2. **主动服务**: 患者描述症状时，主动询问必要细节后给出建议
-                3. **工具优先**: 涉及医院信息时，先用工具查询再回答，不要凭空编造
-                4. **确认再操作**: 预约/取消前必须获得患者明确确认
-                5. **日期准确**: 查询排班时使用今天（%s）作为起始日期
-
-                ## 回复风格
-                - 简洁清晰，重点突出
-                - 有症状分析时，分点说明
-                - 推荐就医时，直接用工具查询并展示选项
-                - 结尾适当关心患者，如"还有其他问题吗？"
-
-                ## 安全提醒
-                - 不提供具体药物剂量
-                - 严重症状建议立即就医
-                - 诊断结果仅供参考，以线下医生诊断为准
-                """.formatted(currentDate, currentDateIso, currentDateIso);
+                    ## 安全红线
+                    不做诊断结论、不给药物剂量、急症建议去急诊科。
+                    """.formatted(currentDate);
+        }
     }
 
     /**
