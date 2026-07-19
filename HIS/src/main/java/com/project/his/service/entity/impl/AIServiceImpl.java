@@ -212,7 +212,7 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
         final String finalSessionId = sessionId;
 
         // 创建事件通道
-        Sinks.Many<AiEvent> eventSink = Sinks.many().multicast().onBackpressureBuffer();
+        Sinks.Many<AiEvent> eventSink = Sinks.many().multicast().onBackpressureBuffer(256);
         AiEventSinkRegistry.register(finalSessionId, eventSink);
         ToolEventEmitter emitter = new ToolEventEmitter(finalSessionId);
         ToolResultEmitterHolder.set(emitter);
@@ -229,6 +229,13 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 .stream()
                 .content()
                 .map(text -> AiEvent.builder().type("text").content(text).build())
+                .doOnComplete(() -> {
+                    Sinks.Many<AiEvent> sink = AiEventSinkRegistry.get(finalSessionId);
+                    if (sink != null) {
+                        sink.tryEmitNext(AiEvent.builder().type("done").sessionId(finalSessionId).build());
+                    }
+                    eventSink.tryEmitComplete();
+                })
                 .contextWrite(ctx -> ctx
                         .put(PatientContext.SESSION_ID_KEY, finalSessionId)
                         .put(PatientContext.PATIENT_ID_KEY, patientId));
@@ -239,7 +246,6 @@ public class AIServiceImpl extends ServiceImpl<AiConsultRecordMapper, AiConsultR
                 .doOnComplete(() -> {
                     updateMemoryCreateTimes(finalSessionId, userTime, LocalDateTime.now());
                     saveConsultRecord(finalSessionId);
-                    emitter.emitDone();
                     AiEventSinkRegistry.remove(finalSessionId);
                 })
                 .doOnError(error -> {

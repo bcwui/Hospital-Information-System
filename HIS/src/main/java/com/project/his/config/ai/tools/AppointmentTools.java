@@ -1,5 +1,6 @@
 package com.project.his.config.ai.tools;
 
+import com.project.his.config.ai.event.ToolEventEmitter;
 import com.project.his.domain.po.Doctor;
 import com.project.his.domain.po.Schedule;
 import com.project.his.domain.vo.AppointmentVO;
@@ -66,8 +67,16 @@ public class AppointmentTools {
     public String getMyAppointments(
             @ToolParam(description = "预约状态筛选，可选值：0-待就诊，1-已就诊，2-已取消，不传则查询全部") Integer status) {
 
+        ToolEventEmitter emitter = ToolResultEmitterHolder.get();
+        if (emitter != null) {
+            emitter.emitToolCall("getMyAppointments", null);
+        }
+
         Long resolvedId = resolvePatientId();
         if (resolvedId == null) {
+            if (emitter != null) {
+                emitter.emitToolResult("getMyAppointments", false);
+            }
             return "无法获取当前患者信息，请确保已登录。如果问题持续，请刷新页面重新进入。";
         }
 
@@ -77,6 +86,9 @@ public class AppointmentTools {
             List<AppointmentVO> appointments = registrationService.getPatientAppointmentVOs(resolvedId, status);
             if (appointments == null || appointments.isEmpty()) {
                 String statusDesc = getStatusDesc(status);
+                if (emitter != null) {
+                    emitter.emitToolResult("getMyAppointments", true);
+                }
                 return "您当前没有" + statusDesc + "的预约记录";
             }
 
@@ -89,9 +101,15 @@ public class AppointmentTools {
                         .append("，状态: ").append(getStatusDesc(vo.getStatus()))
                         .append("\n");
             }
+            if (emitter != null) {
+                emitter.emitToolResult("getMyAppointments", true);
+            }
             return sb.toString();
         } catch (Exception e) {
             log.error("查询预约记录失败", e);
+            if (emitter != null) {
+                emitter.emitToolResult("getMyAppointments", false);
+            }
             return "查询预约记录失败：" + e.getMessage();
         }
     }
@@ -103,12 +121,23 @@ public class AppointmentTools {
     public String createAppointment(
             @ToolParam(description = "排班ID，可通过查询医生排班获取") Long scheduleId) {
 
+        ToolEventEmitter emitter = ToolResultEmitterHolder.get();
+        if (emitter != null) {
+            emitter.emitToolCall("createAppointment", null);
+        }
+
         if (scheduleId == null) {
+            if (emitter != null) {
+                emitter.emitToolResult("createAppointment", true);
+            }
             return "请提供排班ID";
         }
 
         Long resolvedId = resolvePatientId();
         if (resolvedId == null) {
+            if (emitter != null) {
+                emitter.emitToolResult("createAppointment", false);
+            }
             return "无法获取当前患者信息，请确保已登录。如果问题持续，请刷新页面重新进入。";
         }
 
@@ -116,11 +145,17 @@ public class AppointmentTools {
 
         Schedule schedule = scheduleService.getById(scheduleId);
         if (schedule == null) {
+            if (emitter != null) {
+                emitter.emitToolResult("createAppointment", true);
+            }
             return "排班不存在，请确认排班ID是否正确";
         }
 
         int remaining = schedule.getMaxPatients() - schedule.getCurrentPatients();
         if (remaining <= 0) {
+            if (emitter != null) {
+                emitter.emitToolResult("createAppointment", true);
+            }
             return "该排班已满，无法预约";
         }
 
@@ -129,6 +164,9 @@ public class AppointmentTools {
             Doctor doctor = doctorService.getById(schedule.getDoctorId());
             String doctorName = doctor != null ? doctor.getName() : "未知医生";
 
+            if (emitter != null) {
+                emitter.emitToolResult("createAppointment", true);
+            }
             return "预约成功！\n" +
                     "预约ID: " + vo.getAppointmentId() + "\n" +
                     "医生: " + doctorName + "\n" +
@@ -136,6 +174,9 @@ public class AppointmentTools {
                     "请按时就诊，如需取消请提前操作。";
         } catch (Exception e) {
             log.error("创建预约失败", e);
+            if (emitter != null) {
+                emitter.emitToolResult("createAppointment", false);
+            }
             return "预约失败：" + e.getMessage();
         }
     }
@@ -147,12 +188,23 @@ public class AppointmentTools {
     public String cancelAppointment(
             @ToolParam(description = "要取消的预约ID") Long appointmentId) {
 
+        ToolEventEmitter emitter = ToolResultEmitterHolder.get();
+        if (emitter != null) {
+            emitter.emitToolCall("cancelAppointment", null);
+        }
+
         if (appointmentId == null) {
+            if (emitter != null) {
+                emitter.emitToolResult("cancelAppointment", true);
+            }
             return "请提供要取消的预约ID";
         }
 
         Long resolvedId = resolvePatientId();
         if (resolvedId == null) {
+            if (emitter != null) {
+                emitter.emitToolResult("cancelAppointment", false);
+            }
             return "无法获取当前患者信息，请确保已登录。如果问题持续，请刷新页面重新进入。";
         }
 
@@ -160,6 +212,9 @@ public class AppointmentTools {
 
         try {
             boolean result = registrationService.cancelAppointment(appointmentId, resolvedId);
+            if (emitter != null) {
+                emitter.emitToolResult("cancelAppointment", result);
+            }
             if (result) {
                 return "预约已成功取消（预约ID: " + appointmentId + "）";
             } else {
@@ -167,6 +222,9 @@ public class AppointmentTools {
             }
         } catch (Exception e) {
             log.error("取消预约失败", e);
+            if (emitter != null) {
+                emitter.emitToolResult("cancelAppointment", false);
+            }
             return "取消预约失败：" + e.getMessage();
         }
     }
