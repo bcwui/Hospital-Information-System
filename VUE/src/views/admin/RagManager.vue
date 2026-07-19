@@ -25,6 +25,9 @@
                 添加文档
               </el-button>
               <el-button @click="resetAddForm">重置</el-button>
+              <el-button type="success" @click="importBuiltIn" :loading="importing" style="margin-left: 12px">
+                一键导入内置语料
+              </el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -129,6 +132,7 @@ import { ElMessage } from 'element-plus';
 import { UploadFilled } from '@element-plus/icons-vue';
 import type { UploadInstance, UploadFile, UploadRawFile } from 'element-plus';
 import { addRagDocuments, searchRagDocuments, uploadPdf, type RagSearchResult } from '@/api/admin/rag';
+import { DoAxiosWithErro } from '@/api/index';
 
 const activeTab = ref('add');
 
@@ -154,6 +158,7 @@ const hasSearched = ref(false);
 const uploadRef = ref<UploadInstance>();
 const selectedFile = ref<File | null>(null);
 const uploading = ref(false);
+const importing = ref(false);
 const uploadResult = ref<number | null>(null);
 
 const handleFileChange = (file: UploadFile) => {
@@ -258,6 +263,18 @@ const handleSearch = async () => {
     searchResults.value = [];
   } finally {
     searching.value = false;
+  }
+};
+
+const importBuiltIn = async () => {
+  importing.value = true;
+  try {
+    const res = await DoAxiosWithErro('/ai/rag/import-built-in', 'post', null, true);
+    ElMessage.success(res || '内置语料导入成功');
+  } catch (e) {
+    ElMessage.error('导入失败');
+  } finally {
+    importing.value = false;
   }
 };
 </script>

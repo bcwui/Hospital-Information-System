@@ -24,6 +24,13 @@ public interface IAiRagService {
     int uploadPdf(MultipartFile file);
 
     /**
+     * 从目录批量导入 Markdown 文件
+     * @param directoryPath 目录路径
+     * @return 入库的文档片段总数
+     */
+    int importMarkdownFiles(String directoryPath);
+
+    /**
      * 相似检索
      */
     List<AiRagSearchResult> search(AiRagSearchRequest request);

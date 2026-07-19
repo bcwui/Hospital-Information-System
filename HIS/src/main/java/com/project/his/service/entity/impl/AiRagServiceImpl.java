@@ -20,6 +20,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -126,6 +128,61 @@ public class AiRagServiceImpl implements IAiRagService {
             log.error("PDF解析入库失败: {}", e.getMessage());
             return 0;
         }
+    }
+
+    @Override
+    public int importMarkdownFiles(String directoryPath) {
+        VectorStore vectorStore = vectorStoreProvider.getIfAvailable();
+        if (vectorStore == null) {
+            log.warn("VectorStore 未初始化，跳过 Markdown 入库");
+            return 0;
+        }
+        java.io.File dir = new java.io.File(directoryPath);
+        if (!dir.exists() || !dir.isDirectory()) {
+            log.warn("知识库目录不存在: {}", directoryPath);
+            return 0;
+        }
+        java.io.File[] files = dir.listFiles((d, name) -> name.endsWith(".md"));
+        if (files == null || files.length == 0) {
+            log.warn("知识库目录下没有 .md 文件: {}", directoryPath);
+            return 0;
+        }
+        int total = 0;
+        for (java.io.File file : files) {
+            try {
+                String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+                if (content == null || content.isBlank()) continue;
+                List<Document> chunks = splitMarkdown(content, file.getName());
+                if (chunks.isEmpty()) continue;
+                vectorStore.add(chunks);
+                total += chunks.size();
+                log.info("Markdown 入库成功: {}, {} 个分块", file.getName(), chunks.size());
+            } catch (Exception e) {
+                log.error("Markdown 入库失败: {}", file.getName(), e);
+            }
+        }
+        return total;
+    }
+
+    private List<Document> splitMarkdown(String content, String fileName) {
+        List<Document> chunks = new ArrayList<>();
+        String title = fileName.replace(".md", "");
+        String[] parts = content.split("\n## ");
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i].trim();
+            if (part.isEmpty()) continue;
+            Map<String, Object> metadata = new HashMap<>();
+            metadata.put("source", fileName);
+            metadata.put("source_type", "markdown");
+            int newlineIdx = part.indexOf('\n');
+            if (newlineIdx > 0) {
+                metadata.put("title", (i == 0 ? title : part.substring(0, newlineIdx).trim()));
+            } else {
+                metadata.put("title", title);
+            }
+            chunks.add(new Document(part, metadata));
+        }
+        return chunks;
     }
 
     @Override

@@ -72,7 +72,7 @@
                   <ToolStepBlock v-else-if="block.type === 'toolStep'" :step="block" />
                   <CardMessage v-else-if="block.type === 'card'" :card-type="block.cardType" :data="block.data"
                     @book="handleBookSchedule" @cancel="handleCancelAppointment" />
-                  <div v-else-if="block.type === 'ref'" class="ref-placeholder">[引用来源: {{ block.sources?.length }} 条]</div>
+                  <ReferenceBlock v-else-if="block.type === 'ref'" :sources="block.sources" />
                   <div v-else-if="block.type === 'error'" class="error-block">
                     <span class="error-text">{{ block.message }}</span>
                   </div>
@@ -121,6 +121,7 @@ import aiAvatar from '@/assets/AIavator.png';
 import type { AiEvent, ChatMessage, MessageBlock, RefSource } from '@/types/chat'
 import ToolStepBlock from '@/components/chat/ToolStepBlock.vue'
 import CardMessage from '@/components/chat/CardMessage.vue'
+import ReferenceBlock from '@/components/chat/ReferenceBlock.vue'
 
 marked.setOptions({
   breaks: true,
@@ -885,15 +886,6 @@ onUnmounted(() => {
   color: rgba(255, 255, 255, 0.95);
 }
 
-.ref-placeholder {
-  padding: 8px 12px;
-  margin: 4px 0;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  color: #94a3b8;
-  background: #f8fafc;
-  border: 1px dashed #e2e8f0;
-}
 .error-block {
   display: flex;
   align-items: center;

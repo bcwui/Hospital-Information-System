@@ -54,6 +54,21 @@ public class AiRagController {
     }
 
     /**
+     * 一键导入内置 Markdown 语料
+     */
+    @PostMapping("/import-built-in")
+    public Result<String> importBuiltIn() {
+        try {
+            String knowledgeDir = "../docs/knowledge";
+            int total = aiRagService.importMarkdownFiles(knowledgeDir);
+            return Result.success("成功导入 " + total + " 个文档片段", String.valueOf(total));
+        } catch (Exception e) {
+            log.error("导入内置语料失败", e);
+            return Result.error("导入失败: " + e.getMessage());
+        }
+    }
+
+    /**
      * 相似检索
      */
     @PostMapping("/search")

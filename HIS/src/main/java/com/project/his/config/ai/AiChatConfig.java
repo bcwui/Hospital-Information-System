@@ -3,20 +3,16 @@ package com.project.his.config.ai;
 import com.project.his.common.ai.memory.RedissonChatMemoryRepository;
 import com.project.his.config.ai.tools.AppointmentTools;
 import com.project.his.config.ai.tools.HospitalTools;
+import com.project.his.config.ai.tools.KnowledgeTools;
 import org.redisson.api.RedissonClient;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 
@@ -48,33 +44,14 @@ public class AiChatConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "app.ai.rag", name = "enabled", havingValue = "true")
-    public QuestionAnswerAdvisor questionAnswerAdvisor(VectorStore vectorStore, AiProperties properties) {
-        AiProperties.Rag rag = properties.getRag();
-        SearchRequest.Builder builder = SearchRequest.builder()
-                .topK(rag.getTopK())
-                .similarityThreshold(rag.getSimilarityThreshold());
-        if (StringUtils.hasText(rag.getFilterExpression())) {
-            builder.filterExpression(rag.getFilterExpression());
-        }
-        return QuestionAnswerAdvisor.builder(vectorStore)
-                .searchRequest(builder.build())
-                .build();
-    }
-
-    @Bean
     public ChatClient chatClient(ChatClient.Builder builder,
                                  MessageChatMemoryAdvisor messageChatMemoryAdvisor,
-                                 org.springframework.beans.factory.ObjectProvider<QuestionAnswerAdvisor> qaAdvisorProvider,
                                  HospitalTools hospitalTools,
-                                 @org.springframework.context.annotation.Lazy AppointmentTools appointmentTools) {
-        QuestionAnswerAdvisor qaAdvisor = qaAdvisorProvider.getIfAvailable();
-        ChatClient.Builder clientBuilder = builder
-                .defaultTools(hospitalTools, appointmentTools)
-                .defaultAdvisors(messageChatMemoryAdvisor);
-        if (qaAdvisor != null) {
-            clientBuilder.defaultAdvisors(qaAdvisor);
-        }
-        return clientBuilder.build();
+                                 @org.springframework.context.annotation.Lazy AppointmentTools appointmentTools,
+                                 KnowledgeTools knowledgeTools) {
+        return builder
+                .defaultTools(hospitalTools, appointmentTools, knowledgeTools)
+                .defaultAdvisors(messageChatMemoryAdvisor)
+                .build();
     }
 }
