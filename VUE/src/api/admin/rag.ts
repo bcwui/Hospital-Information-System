@@ -46,11 +46,9 @@ export const uploadPdf = async (file: File): Promise<number> => {
     const token = localStorage.getItem("userToken") || "";
     const response = await myApi.post("/ai/rag/upload-pdf", formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
-        satoken: token,
-        Authorization: `Bearer ${token}`,
+        "sa-token-authorization": token,
       },
-      timeout: 60000, // PDF处理可能较慢，设置60秒超时
+      timeout: 60000,
     });
 
     if (response.data.code === 200) {
