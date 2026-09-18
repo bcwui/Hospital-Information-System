@@ -20,6 +20,8 @@ import com.project.his.domain.vo.AppointmentVO;
 import com.project.his.domain.vo.DoctorVO;
 import com.project.his.domain.vo.ScheduleDetailVO;
 import com.project.his.domain.vo.ScheduleListVO;
+import com.project.his.service.business.IBillBizService;
+import com.project.his.service.business.INotificationBizService;
 import com.project.his.service.business.IRegistrationService;
 import com.project.his.service.entity.IAIService;
 import com.project.his.service.entity.IAppointmentService;
@@ -66,7 +68,11 @@ public class RegistrationServiceImpl implements IRegistrationService {
     private final IPatientService patientService;
 
     private final IUserService userService;
-    
+
+    private final IBillBizService billBizService;
+
+    private final INotificationBizService notificationBizService;
+
     @Override
     public Flux<String> streamAiConsult(Long patientId, String sessionId, String question) {
         log.info("发起AI问诊流式请求, patientId: {}, sessionId: {}", patientId, sessionId);
@@ -703,10 +709,33 @@ public class RegistrationServiceImpl implements IRegistrationService {
                             appointment.getAppointmentDate() != null && 
                             appointment.getAppointmentDate().isAfter(LocalDate.now());
         vo.setCanCancel(canCancel);
-        
+
+        // 自动生成挂号费账单
+        try {
+            billBizService.createRegistrationBillItem(appointment.getAppointmentId(), patientId);
+        } catch (Exception e) {
+            log.warn("生成挂号费账单失败: appointmentId={}, error={}", appointment.getAppointmentId(), e.getMessage());
+        }
+
+        // 发送预约成功通知
+        try {
+            User patientUser = userService.getById(patient.getUserId());
+            if (patientUser != null) {
+                String doctorName = doctor != null ? doctor.getName() : "医生";
+                notificationBizService.sendAppointmentNotification(
+                        patientUser.getId(),
+                        "预约成功",
+                        "您已成功预约" + doctorName + "的" + appointment.getAppointmentDate()
+                                + " " + appointment.getTimeSlot() + "时段门诊，请按时就诊。",
+                        appointment.getAppointmentId());
+            }
+        } catch (Exception e) {
+            log.warn("发送预约通知失败: appointmentId={}, error={}", appointment.getAppointmentId(), e.getMessage());
+        }
+
         return vo;
     }
-    
+
     @Override
     public List<AppointmentVO> getPatientAppointmentVOs(Long patientId, Integer status) {
         // 先获取预约记录

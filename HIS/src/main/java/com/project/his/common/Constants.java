@@ -43,6 +43,16 @@ public class Constants {
          * AI问诊锁前缀
          */
         public static final String AI_CONSULT_LOCK = "ai_consult:lock:";
+
+        /**
+         * RAG内置语料导入标记
+         */
+        public static final String RAG_IMPORTED = "his:rag:imported";
+
+        /**
+         * RAG已上传PDF文件名集合
+         */
+        public static final String RAG_PDF_UPLOADED = "his:rag:pdf:uploaded";
     }
 
     /**

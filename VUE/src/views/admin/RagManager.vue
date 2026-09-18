@@ -28,6 +28,12 @@
               <el-button type="success" @click="importBuiltIn" :loading="importing" style="margin-left: 12px">
                 一键导入内置语料
               </el-button>
+              <el-button v-if="importedCount > 0" type="warning" size="small" @click="importBuiltInForce" :loading="importingForce" style="margin-left: 8px">
+                重新导入
+              </el-button>
+            </el-form-item>
+            <el-form-item v-if="importedCount > 0">
+              <el-alert title="内置语料已导入" :description="'共 ' + importedCount + ' 个分块，如需更新语料请点击「重新导入」'" type="info" show-icon :closable="false" />
             </el-form-item>
           </el-form>
         </div>
@@ -159,6 +165,8 @@ const uploadRef = ref<UploadInstance>();
 const selectedFile = ref<File | null>(null);
 const uploading = ref(false);
 const importing = ref(false);
+const importingForce = ref(false);
+const importedCount = ref(0);
 const uploadResult = ref<number | null>(null);
 
 const handleFileChange = (file: UploadFile) => {
@@ -269,12 +277,28 @@ const handleSearch = async () => {
 const importBuiltIn = async () => {
   importing.value = true;
   try {
-    const count = await DoAxiosWithErro<number>('/ai/rag/import-built-in', 'post', null, true);
-    ElMessage.success(`内置语料导入成功，共 ${count} 个文档片段`);
+    const count = await DoAxiosWithErro<number>('/ai/rag/import-built-in', 'post', null, true, false, 120000);
+    importedCount.value = count;
+    if (count > 0) {
+      ElMessage.success(`内置语料导入成功，共 ${count} 个文档片段`);
+    }
   } catch (e) {
-    ElMessage.error('导入失败');
+    ElMessage.error('导入失败，请稍后重试');
   } finally {
     importing.value = false;
+  }
+};
+
+const importBuiltInForce = async () => {
+  importingForce.value = true;
+  try {
+    const count = await DoAxiosWithErro<number>('/ai/rag/import-built-in?force=true', 'post', null, true, false, 120000);
+    importedCount.value = count;
+    ElMessage.success(`重新导入完成，共 ${count} 个文档片段`);
+  } catch (e) {
+    ElMessage.error('重新导入失败，请稍后重试');
+  } finally {
+    importingForce.value = false;
   }
 };
 </script>

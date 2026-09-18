@@ -22,7 +22,9 @@ public class ToolEventEmitter {
             Map.entry("getMyAppointments", "正在查询您的预约"),
             Map.entry("createAppointment", "正在为您创建预约"),
             Map.entry("cancelAppointment", "正在为您取消预约"),
-            Map.entry("searchKnowledgeBase", "正在检索医疗知识库")
+            Map.entry("searchKnowledgeBase", "正在检索医疗知识库"),
+            Map.entry("searchDrugs", "正在查询药品信息"),
+            Map.entry("triageEvaluate", "正在进行智能分诊评估")
     );
 
     private final String sessionId;

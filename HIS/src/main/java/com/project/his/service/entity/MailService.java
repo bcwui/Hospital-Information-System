@@ -34,6 +34,24 @@ public class MailService {
     private static final long CODE_EXPIRE_MINUTES = 5 * 60 * 1000; // 5分钟，转换为毫秒
 
     /**
+     * 发送简单文本邮件
+     */
+    public void sendSimpleMail(String to, String subject, String content) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(fromEmail, nickname);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(content, false);
+            javaMailSender.send(message);
+            log.info("邮件已发送: to={}, subject={}", to, subject);
+        } catch (Exception e) {
+            log.error("发送邮件失败: to={}, subject={}", to, subject, e);
+        }
+    }
+
+    /**
      * 发送验证码到指定邮箱
      * @param to 接收者邮箱
      */

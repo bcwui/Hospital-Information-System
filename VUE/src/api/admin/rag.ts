@@ -37,18 +37,23 @@ export const addRagDocuments = async (documents: RagDocument[]): Promise<number 
 /**
  * 上传PDF文档并入库
  * @param file PDF文件
+ * @param force 是否强制重新上传
  */
-export const uploadPdf = async (file: File): Promise<number> => {
+export const uploadPdf = async (file: File, force = false): Promise<number> => {
   const formData = new FormData();
   formData.append("file", file);
+  if (force) {
+    formData.append("force", "true");
+  }
 
   try {
     const token = localStorage.getItem("userToken") || "";
-    const response = await myApi.post("/ai/rag/upload-pdf", formData, {
+    const url = force ? "/ai/rag/upload-pdf?force=true" : "/ai/rag/upload-pdf";
+    const response = await myApi.post(url, formData, {
       headers: {
         "sa-token-authorization": token,
       },
-      timeout: 60000,
+      timeout: 120000,
     });
 
     if (response.data.code === 200) {

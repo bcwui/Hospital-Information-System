@@ -19,15 +19,24 @@ public interface IAiRagService {
     /**
      * PDF文档上传并入库
      * @param file PDF文件
-     * @return 入库的文档片段数量
+     * @return 入库的文档片段数量，-2 表示已上传过
      */
     int uploadPdf(MultipartFile file);
 
     /**
+     * PDF文档上传并入库（支持强制重传）
+     * @param file PDF文件
+     * @param force 是否强制重新上传
+     * @return 入库的文档片段数量，-2 表示已上传过
+     */
+    int uploadPdf(MultipartFile file, boolean force);
+
+    /**
      * 从 classpath:knowledge/ 导入内置 Markdown 语料
+     * @param force 是否强制重新导入（忽略已导入标记）
      * @return 入库的文档片段总数，-1 表示 VectorStore 未初始化
      */
-    int importBuiltInKnowledge();
+    int importBuiltInKnowledge(boolean force);
 
     /**
      * 从目录批量导入 Markdown 文件

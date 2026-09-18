@@ -41,11 +41,16 @@ public class AiRagController {
 
     /**
      * PDF文档上传并入库
+     * @param force 是否强制重新上传（忽略已上传标记）
      */
     @PostMapping(value = "/upload-pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Result<Integer> uploadPdf(@RequestParam("file") MultipartFile file) {
+    public Result<Integer> uploadPdf(@RequestParam("file") MultipartFile file,
+                                      @RequestParam(defaultValue = "false") boolean force) {
         log.info("接收到PDF上传请求: {}", file.getOriginalFilename());
-        int count = aiRagService.uploadPdf(file);
+        int count = aiRagService.uploadPdf(file, force);
+        if (count == -2) {
+            return Result.error("文件「" + file.getOriginalFilename() + "」已上传过，请勿重复上传");
+        }
         if (count > 0) {
             return Result.success("PDF入库成功，共" + count + "个文档片段", count);
         } else {
@@ -55,11 +60,12 @@ public class AiRagController {
 
     /**
      * 一键导入内置 Markdown 语料
+     * @param force 是否强制重新导入（忽略已导入标记）
      */
     @PostMapping("/import-built-in")
-    public Result<Integer> importBuiltIn() {
+    public Result<Integer> importBuiltIn(@RequestParam(defaultValue = "false") boolean force) {
         try {
-            int total = aiRagService.importBuiltInKnowledge();
+            int total = aiRagService.importBuiltInKnowledge(force);
             if (total == -1) {
                 return Result.error("VectorStore 未初始化，请检查 PostgreSQL + pgvector 是否正常运行");
             }
