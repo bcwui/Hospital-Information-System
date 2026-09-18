@@ -69,6 +69,18 @@ const routers = [
     name: 'AI小助手',
   },
   {
+    router: '/patient/prescriptions',
+    name: '我的处方',
+  },
+  {
+    router: '/patient/bills',
+    name: '我的账单',
+  },
+  {
+    router: '/patient/notifications',
+    name: '消息通知',
+  },
+  {
     router: '/patient/myinfo',
     name: '我的信息',
   }

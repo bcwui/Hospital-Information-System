@@ -61,6 +61,10 @@ const routers = [
     name: '挂号预约'
   },
   {
+    router: '/doctor/prescriptions',
+    name: '处方管理'
+  },
+  {
     router: '/doctor/myinfo',
     name: '我的信息'
   },

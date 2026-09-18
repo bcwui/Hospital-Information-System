@@ -61,6 +61,18 @@ const routers = [
     name: '科室管理'
   },
   {
+    router: '/admin/drugs',
+    name: '药品管理'
+  },
+  {
+    router: '/admin/bills',
+    name: '收费管理'
+  },
+  {
+    router: '/admin/dashboard',
+    name: '数据看板'
+  },
+  {
     router: '/admin/rag',
     name: 'RAG知识库'
   },

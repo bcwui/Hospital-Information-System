@@ -15,6 +15,41 @@ const router = createRouter({
       component: () => import("../views/PatiEnt.vue"),
       children: [
         {
+          path: "chat",
+          name: "chat",
+          component: () => import("../views/patient/ChatView.vue"),
+        },
+        {
+          path: "appointments",
+          name: "myAppointments",
+          component: () => import("../views/patient/MyAppointments.vue"),
+        },
+        {
+          path: "myinfo",
+          name: "myinfo",
+          component: () => import("../views/patient/Myinfo.vue"),
+        },
+        {
+          path: "card",
+          name: "card",
+          component: () => import("../views/CardView.vue"),
+        },
+        {
+          path: "prescriptions",
+          name: "myPrescriptions",
+          component: () => import("../views/patient/MyPrescriptions.vue"),
+        },
+        {
+          path: "bills",
+          name: "myBills",
+          component: () => import("../views/patient/MyBills.vue"),
+        },
+        {
+          path: "notifications",
+          name: "notificationCenter",
+          component: () => import("../views/patient/NotificationCenter.vue"),
+        },
+        {
           path: "",
           name: "medicalAp",
           component: () => import("../views/patient/MedicalAp.vue"),
@@ -41,26 +76,6 @@ const router = createRouter({
             },
           ],
         },
-        {
-          path: "chat",
-          name: "chat",
-          component: () => import("../views/patient/ChatView.vue"),
-        },
-        {
-          path: "appointments",
-          name: "myAppointments",
-          component: () => import("../views/patient/MyAppointments.vue"),
-        },
-        {
-          path: "myinfo",
-          name: "myinfo",
-          component: () => import("../views/patient/Myinfo.vue"),
-        },
-        {
-          path: "card",
-          name: "card",
-          component: () => import("../views/CardView.vue"),
-        },
       ],
     },
     {
@@ -68,6 +83,16 @@ const router = createRouter({
       name: "doctor",
       component: () => import("../views/DocTor.vue"),
       children: [
+        {
+          path: "myinfo",
+          name: "doctorMyinfo",
+          component: () => import("../views/doctor/Myinfo.vue"),
+        },
+        {
+          path: "prescriptions",
+          name: "doctorPrescriptions",
+          component: () => import("../views/doctor/PrescriptionView.vue"),
+        },
         {
           path: "",
           name: "outpatient",
@@ -85,11 +110,6 @@ const router = createRouter({
             },
           ],
         },
-        {
-          path: "myinfo",
-          name: "doctorMyinfo",
-          component: () => import("../views/doctor/Myinfo.vue"),
-        },
       ],
     },
     {
@@ -97,6 +117,26 @@ const router = createRouter({
       name: "admin",
       component: () => import("../views/AdMin.vue"),
       children: [
+        {
+          path: "rag",
+          name: "ragManager",
+          component: () => import("../views/admin/RagManager.vue"),
+        },
+        {
+          path: "drugs",
+          name: "drugManage",
+          component: () => import("../views/admin/DrugManage.vue"),
+        },
+        {
+          path: "bills",
+          name: "billManage",
+          component: () => import("../views/admin/BillManage.vue"),
+        },
+        {
+          path: "dashboard",
+          name: "adminDashboard",
+          component: () => import("../views/admin/Dashboard.vue"),
+        },
         {
           path: "",
           name: "crud",
@@ -123,11 +163,6 @@ const router = createRouter({
               component: () => import("@/components/Admin/ScheduleCrudCardsView.vue"),
             },
           ],
-        },
-        {
-          path: "rag",
-          name: "ragManager",
-          component: () => import("../views/admin/RagManager.vue"),
         },
       ],
     },
