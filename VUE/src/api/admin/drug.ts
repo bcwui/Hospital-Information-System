@@ -51,7 +51,7 @@ export const getDrug = async (drugId: number): Promise<DrugVO> => {
 
 export const createDrug = async (dto: DrugDTO): Promise<DrugVO> => {
   try {
-    return await DoAxiosWithErro<DrugVO>("/admin/drugs", "post", dto as Record<string, unknown>, true, true);
+    return await DoAxiosWithErro<DrugVO>("/admin/drugs", "post", dto as unknown as Record<string, unknown>, true, true);
   } catch (err) {
     console.error("创建药品失败:", err);
     throw err;
@@ -60,7 +60,7 @@ export const createDrug = async (dto: DrugDTO): Promise<DrugVO> => {
 
 export const updateDrug = async (dto: DrugDTO): Promise<DrugVO> => {
   try {
-    return await DoAxiosWithErro<DrugVO>("/admin/drugs", "put", dto as Record<string, unknown>, true, true);
+    return await DoAxiosWithErro<DrugVO>("/admin/drugs", "put", dto as unknown as Record<string, unknown>, true, true);
   } catch (err) {
     console.error("更新药品失败:", err);
     throw err;
@@ -78,7 +78,7 @@ export const deleteDrug = async (drugId: number): Promise<boolean> => {
 
 export const stockIn = async (drugId: number, dto: DrugStockDTO): Promise<DrugVO> => {
   try {
-    return await DoAxiosWithErro<DrugVO>(`/admin/drugs/${drugId}/stock-in`, "post", dto as Record<string, unknown>, true, true);
+    return await DoAxiosWithErro<DrugVO>(`/admin/drugs/${drugId}/stock-in`, "post", dto as unknown as Record<string, unknown>, true, true);
   } catch (err) {
     console.error("药品入库失败:", err);
     throw err;
@@ -87,7 +87,7 @@ export const stockIn = async (drugId: number, dto: DrugStockDTO): Promise<DrugVO
 
 export const stockOut = async (drugId: number, dto: DrugStockDTO): Promise<DrugVO> => {
   try {
-    return await DoAxiosWithErro<DrugVO>(`/admin/drugs/${drugId}/stock-out`, "post", dto as Record<string, unknown>, true, true);
+    return await DoAxiosWithErro<DrugVO>(`/admin/drugs/${drugId}/stock-out`, "post", dto as unknown as Record<string, unknown>, true, true);
   } catch (err) {
     console.error("药品出库失败:", err);
     throw err;

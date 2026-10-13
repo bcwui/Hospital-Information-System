@@ -122,6 +122,13 @@ app:
       ttl-seconds: 21600
       max-messages: 20
 
+# ==================== MinIO（用户头像存储）====================
+minio:
+  endpoint: http://127.0.0.1:9000
+  access-key: minioadmin
+  secret-key: your_minio_password      # 与 middleware/.env 的 MINIO_PASSWORD 保持一致
+  public-url: http://127.0.0.1:9000    # 生产环境改成 https://his.zx1014.online/avatars
+
 #aliyun:
 #  oss:
 #    endpoint: https://oss-cn-hangzhou.aliyuncs.com

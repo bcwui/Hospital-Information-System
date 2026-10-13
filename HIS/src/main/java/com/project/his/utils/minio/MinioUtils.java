@@ -5,6 +5,7 @@ import io.minio.errors.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,13 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class MinioUtils {
     private final MinioClient minioClient;
+
+    /**
+     * 头像对外的公开访问地址（浏览器直接访问它，再由 Nginx 反代到 MinIO）
+     * 由 application.yml 的 minio.public-url 注入；本机开发默认 http://127.0.0.1:9000
+     */
+    @Value("${minio.public-url:http://127.0.0.1:9000}")
+    private String publicUrl;
 
     /**
      * 检查桶是否存在
@@ -101,8 +109,13 @@ public class MinioUtils {
      * @return 公开访问URL
      */
     public String getPublicUrl(String bucketName, String objectName) {
-        // MinIO endpoint: http://localhost:9000
-        return "http://localhost:9000/" + bucketName + "/" + objectName;
+        // 对外地址由配置决定：
+        //   生产：https://his.zx1014.online/avatars（Nginx 的 /avatars/ 反代到 MinIO）
+        //   本机：http://127.0.0.1:9000
+        String base = publicUrl.endsWith("/")
+                ? publicUrl.substring(0, publicUrl.length() - 1)
+                : publicUrl;
+        return base + "/" + bucketName + "/" + objectName;
     }
     
     /**

@@ -201,7 +201,7 @@ import {
   type DrugVO, type PrescriptionVO, type PrescriptionDetailDTO, type PatientVO
 } from "@/api/doctor/prescription";
 
-const patientId = ref<number | null>(null);
+const patientId = ref<number>();   // el-select 的 model 不接受 null，用 undefined 表示"未选择患者"
 const patientName = ref("");
 const searchingPatient = ref(false);
 const patientOptions = ref<PatientVO[]>([]);
@@ -216,6 +216,7 @@ interface RxItem extends DrugVO {
   frequency: string;
   days: number;
   remark: string;
+  quantity: number;   // 处方明细数量：代码里一直在用（编辑弹窗、提交、回显），原类型漏了 → vue-tsc 报 4 处错
 }
 
 const prescriptionItems = ref<RxItem[]>([]);

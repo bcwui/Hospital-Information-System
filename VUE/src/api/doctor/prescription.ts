@@ -59,7 +59,7 @@ export const searchDrugs = async (name?: string): Promise<DrugVO[]> => {
 
 export const submitPrescription = async (dto: PrescriptionSubmitDTO): Promise<PrescriptionVO> => {
   try {
-    return await DoAxiosWithErro<PrescriptionVO>("/doctor/prescriptions", "post", dto as Record<string, unknown>, true, true);
+    return await DoAxiosWithErro<PrescriptionVO>("/doctor/prescriptions", "post", dto as unknown as Record<string, unknown>, true, true);
   } catch (err) {
     console.error("提交处方失败:", err);
     throw err;

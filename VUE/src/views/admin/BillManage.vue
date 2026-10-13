@@ -3,7 +3,8 @@
     <h2>收费管理</h2>
     <div class="toolbar">
       <el-select v-model="filterStatus" placeholder="支付状态" clearable @change="loadBills" style="width: 160px">
-        <el-option label="全部" :value="undefined" />
+        <!-- el-option 的 value 类型不收 undefined，但这里运行时就需要 undefined 表示"不限"（clearable 清空时也发 undefined） -->
+        <el-option label="全部" :value="undefined as unknown as number" />
         <el-option label="未支付" :value="0" />
         <el-option label="已支付" :value="2" />
       </el-select>
